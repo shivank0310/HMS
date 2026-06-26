@@ -1,0 +1,124 @@
+{
+	"name": "test-network",
+	"version": "1.0.0",
+	"license": "Apache-2.0",
+	"client": {
+		"tlsEnable": true,
+		"adminCredential": {
+			"id": "exploreradmin",
+			"password": "exploreradminpw"
+		},
+		"enableAuthentication": true,
+		"organization": "HospitalAdminMSP",
+		"connection": {
+			"timeout": {
+				"peer": {
+					"endorser": "300"
+				},
+				"orderer": "300"
+			}
+		}
+	},
+	"channels": {
+		"mychannel": {
+			"peers": {
+				"peer0.hospitaladmin.example.com": {},
+				"peer0.clinicalstaff.example.com": {},
+				"peer0.diagnosticstaff.example.com": {},
+				"peer0.pharmacy.example.com": {},
+				"peer0.insurance.example.com": {},
+				"peer0.patientaccess.example.com": {}
+			},
+			"connection": {
+				"timeout": {
+					"peer": {
+						"endorser": "6000",
+						"eventHub": "6000",
+						"eventReg": "6000"
+					}
+				}
+			}
+		}
+	},
+	"organizations": {
+		"HospitalAdminMSP": {
+			"mspid": "HospitalAdminMSP",
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/hospitaladmin.example.com/users/Admin@hospitaladmin.example.com/msp/keystore/90531ac949de30c211d386612dd54e623ba5c63abcb410be880b3fd17f7cde51_sk"
+			},
+			"peers": [
+				"peer0.hospitaladmin.example.com",
+				"peer0.clinicalstaff.example.com",
+				"peer0.diagnosticstaff.example.com",
+				"peer0.pharmacy.example.com",
+				"peer0.insurance.example.com",
+				"peer0.patientaccess.example.com"
+			],
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/hospitaladmin.example.com/users/Admin@hospitaladmin.example.com/msp/signcerts/cert.pem"
+			}
+		}
+	},
+	"peers": {
+		"peer0.hospitaladmin.example.com": {
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/hospitaladmin.example.com/peers/peer0.hospitaladmin.example.com/tls/ca.crt"
+			},
+			"url": "grpcs://peer0.hospitaladmin.example.com:7051",
+			"grpcOptions": {
+				"ssl-target-name-override": "peer0.hospitaladmin.example.com",
+				"hostnameOverride": "peer0.hospitaladmin.example.com"
+			}
+		},
+		"peer0.clinicalstaff.example.com": {
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/clinicalstaff.example.com/peers/peer0.clinicalstaff.example.com/tls/ca.crt"
+			},
+			"url": "grpcs://peer0.clinicalstaff.example.com:8051",
+			"grpcOptions": {
+				"ssl-target-name-override": "peer0.clinicalstaff.example.com",
+				"hostnameOverride": "peer0.clinicalstaff.example.com"
+			}
+		},
+		"peer0.diagnosticstaff.example.com": {
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/diagnosticstaff.example.com/peers/peer0.diagnosticstaff.example.com/tls/ca.crt"
+			},
+			"url": "grpcs://peer0.diagnosticstaff.example.com:9051",
+			"grpcOptions": {
+				"ssl-target-name-override": "peer0.diagnosticstaff.example.com",
+				"hostnameOverride": "peer0.diagnosticstaff.example.com"
+			}
+		},
+		"peer0.pharmacy.example.com": {
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/pharmacy.example.com/peers/peer0.pharmacy.example.com/tls/ca.crt"
+			},
+			"url": "grpcs://peer0.pharmacy.example.com:10051",
+			"grpcOptions": {
+				"ssl-target-name-override": "peer0.pharmacy.example.com",
+				"hostnameOverride": "peer0.pharmacy.example.com"
+			}
+		},
+		"peer0.insurance.example.com": {
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/insurance.example.com/peers/peer0.insurance.example.com/tls/ca.crt"
+			},
+			"url": "grpcs://peer0.insurance.example.com:11051",
+			"grpcOptions": {
+				"ssl-target-name-override": "peer0.insurance.example.com",
+				"hostnameOverride": "peer0.insurance.example.com"
+			}
+		},
+		"peer0.patientaccess.example.com": {
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/patientaccess.example.com/peers/peer0.patientaccess.example.com/tls/ca.crt"
+			},
+			"url": "grpcs://peer0.patientaccess.example.com:12051",
+			"grpcOptions": {
+				"ssl-target-name-override": "peer0.patientaccess.example.com",
+				"hostnameOverride": "peer0.patientaccess.example.com"
+			}
+		}
+	}
+}

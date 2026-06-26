@@ -1,0 +1,143 @@
+{
+	"name": "test-network",
+	"version": "1.0.0",
+	"license": "Apache-2.0",
+	"client": {
+		"tlsEnable": true,
+		"adminCredential": {
+			"id": "exploreradmin",
+			"password": "exploreradminpw"
+		},
+		"enableAuthentication": true,
+		"organization": "HospitalAdminMSP",
+		"connection": {
+			"timeout": {
+				"peer": {
+					"endorser": "300"
+				},
+				"orderer": "300"
+			}
+		}
+	},
+	"channels": {
+		"mychannel": {
+			"peers": {
+				"peer0.hospitaladmin.example.com": {},
+				"peer0.clinicalstaff.example.com": {},
+				"peer0.diagnosticstaff.example.com": {},
+				"peer0.pharmacy.example.com": {},
+				"peer0.insurance.example.com": {},
+				"peer0.patientaccess.example.com": {}
+			},
+			"connection": {
+				"timeout": {
+					"peer": {
+						"endorser": "6000",
+						"eventHub": "6000",
+						"eventReg": "6000"
+					}
+				}
+			}
+		}
+	},
+	"organizations": {
+		"HospitalAdminMSP": {
+			"mspid": "HospitalAdminMSP",
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/hospitaladmin.example.com/users/Admin@hospitaladmin.example.com/msp/keystore/priv_sk"
+			},
+			"peers": ["peer0.hospitaladmin.example.com"],
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/hospitaladmin.example.com/users/Admin@hospitaladmin.example.com/msp/signcerts/cert.pem"
+			}
+		},
+		"ClinicalStaffMSP": {
+			"mspid": "ClinicalStaffMSP",
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/clinicalstaff.example.com/users/Admin@clinicalstaff.example.com/msp/keystore/priv_sk"
+			},
+			"peers": ["peer0.clinicalstaff.example.com"],
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/clinicalstaff.example.com/users/Admin@clinicalstaff.example.com/msp/signcerts/cert.pem"
+			}
+		},
+		"DiagnosticStaffMSP": {
+			"mspid": "DiagnosticStaffMSP",
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/diagnosticstaff.example.com/users/Admin@diagnosticstaff.example.com/msp/keystore/priv_sk"
+			},
+			"peers": ["peer0.diagnosticstaff.example.com"],
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/diagnosticstaff.example.com/users/Admin@diagnosticstaff.example.com/msp/signcerts/cert.pem"
+			}
+		},
+		"PharmacyServicesMSP": {
+			"mspid": "PharmacyServicesMSP",
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/pharmacy.example.com/users/Admin@pharmacy.example.com/msp/keystore/priv_sk"
+			},
+			"peers": ["peer0.pharmacy.example.com"],
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/pharmacy.example.com/users/Admin@pharmacy.example.com/msp/signcerts/cert.pem"
+			}
+		},
+		"InsuranceProviderMSP": {
+			"mspid": "InsuranceProviderMSP",
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/insurance.example.com/users/Admin@insurance.example.com/msp/keystore/priv_sk"
+			},
+			"peers": ["peer0.insurance.example.com"],
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/insurance.example.com/users/Admin@insurance.example.com/msp/signcerts/cert.pem"
+			}
+		},
+		"PatientAccessMSP": {
+			"mspid": "PatientAccessMSP",
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/patientaccess.example.com/users/Admin@patientaccess.example.com/msp/keystore/priv_sk"
+			},
+			"peers": ["peer0.patientaccess.example.com"],
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/patientaccess.example.com/users/Admin@patientaccess.example.com/msp/signcerts/cert.pem"
+			}
+		}
+	},
+	"peers": {
+		"peer0.hospitaladmin.example.com": {
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/hospitaladmin.example.com/peers/peer0.hospitaladmin.example.com/tls/ca.crt"
+			},
+			"url": "grpcs://127.0.0.1:7051"
+		},
+		"peer0.clinicalstaff.example.com": {
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/clinicalstaff.example.com/peers/peer0.clinicalstaff.example.com/tls/ca.crt"
+			},
+			"url": "grpcs://127.0.0.1:8051"
+		},
+		"peer0.diagnosticstaff.example.com": {
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/diagnosticstaff.example.com/peers/peer0.diagnosticstaff.example.com/tls/ca.crt"
+			},
+			"url": "grpcs://127.0.0.1:9051"
+		},
+		"peer0.pharmacy.example.com": {
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/pharmacy.example.com/peers/peer0.pharmacy.example.com/tls/ca.crt"
+			},
+			"url": "grpcs://127.0.0.1:10051"
+		},
+		"peer0.insurance.example.com": {
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/insurance.example.com/peers/peer0.insurance.example.com/tls/ca.crt"
+			},
+			"url": "grpcs://127.0.0.1:11051"
+		},
+		"peer0.patientaccess.example.com": {
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/patientaccess.example.com/peers/peer0.patientaccess.example.com/tls/ca.crt"
+			},
+			"url": "grpcs://127.0.0.1:12051"
+		}
+	}
+}

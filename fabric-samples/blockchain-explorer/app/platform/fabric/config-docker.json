@@ -1,0 +1,11 @@
+{
+	"network-configs": {
+		"test-network": {
+			"name": "Healthcare Test Network",
+			"profile": "./connection-profile/test-network-docker.json",
+			"bootMode": "ALL",
+			"noOfBlocks": 0
+		}
+	},
+	"license": "Apache-2.0"
+}

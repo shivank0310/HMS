@@ -1,0 +1,80 @@
+
+> hyperledger-explorer@2.0.0 start
+> run-s build app-start
+
+
+> hyperledger-explorer@2.0.0 build
+> tsc
+
+
+> hyperledger-explorer@2.0.0 app-start
+> ./start.sh
+
+************************************************************************************
+**************************** Hyperledger Explorer **********************************
+************************************************************************************
+Server running...
+2026-06-25T09:53:30.017Z - [31merror[39m: [ServiceEndpoint]: Error: Failed to connect before the deadline on Endorser- name: peer0.hospitaladmin.example.com, url:grpcs://127.0.0.1:7051, connected:false, connectAttempted:true
+2026-06-25T09:53:30.018Z - [31merror[39m: [ServiceEndpoint]: waitForReady - Failed to connect to remote gRPC server peer0.hospitaladmin.example.com url:grpcs://127.0.0.1:7051 timeout:3000
+2026-06-25T09:53:30.019Z - [32minfo[39m: [NetworkConfig]: buildPeer - Unable to connect to the endorser peer0.hospitaladmin.example.com due to Error: Failed to connect before the deadline on Endorser- name: peer0.hospitaladmin.example.com, url:grpcs://127.0.0.1:7051, connected:false, connectAttempted:true
+    at checkState (/home/ssingh1/Desktop/HMS/fabric-samples/blockchain-explorer/node_modules/@grpc/grpc-js/build/src/client.js:77:26)
+    at Timeout._onTimeout (/home/ssingh1/Desktop/HMS/fabric-samples/blockchain-explorer/node_modules/@grpc/grpc-js/build/src/channel.js:525:17)
+    at listOnTimeout (node:internal/timers:559:17)
+    at processTimers (node:internal/timers:502:7) {
+  connectFailed: true
+}
+2026-06-25T09:53:33.022Z - [31merror[39m: [ServiceEndpoint]: Error: Failed to connect before the deadline on Endorser- name: peer0.clinicalstaff.example.com, url:grpcs://127.0.0.1:8051, connected:false, connectAttempted:true
+2026-06-25T09:53:33.022Z - [31merror[39m: [ServiceEndpoint]: waitForReady - Failed to connect to remote gRPC server peer0.clinicalstaff.example.com url:grpcs://127.0.0.1:8051 timeout:3000
+2026-06-25T09:53:33.022Z - [32minfo[39m: [NetworkConfig]: buildPeer - Unable to connect to the endorser peer0.clinicalstaff.example.com due to Error: Failed to connect before the deadline on Endorser- name: peer0.clinicalstaff.example.com, url:grpcs://127.0.0.1:8051, connected:false, connectAttempted:true
+    at checkState (/home/ssingh1/Desktop/HMS/fabric-samples/blockchain-explorer/node_modules/@grpc/grpc-js/build/src/client.js:77:26)
+    at Timeout._onTimeout (/home/ssingh1/Desktop/HMS/fabric-samples/blockchain-explorer/node_modules/@grpc/grpc-js/build/src/channel.js:525:17)
+    at listOnTimeout (node:internal/timers:559:17)
+    at processTimers (node:internal/timers:502:7) {
+  connectFailed: true
+}
+2026-06-25T09:53:36.024Z - [31merror[39m: [ServiceEndpoint]: Error: Failed to connect before the deadline on Endorser- name: peer0.diagnosticstaff.example.com, url:grpcs://127.0.0.1:9051, connected:false, connectAttempted:true
+2026-06-25T09:53:36.024Z - [31merror[39m: [ServiceEndpoint]: waitForReady - Failed to connect to remote gRPC server peer0.diagnosticstaff.example.com url:grpcs://127.0.0.1:9051 timeout:3000
+2026-06-25T09:53:36.025Z - [32minfo[39m: [NetworkConfig]: buildPeer - Unable to connect to the endorser peer0.diagnosticstaff.example.com due to Error: Failed to connect before the deadline on Endorser- name: peer0.diagnosticstaff.example.com, url:grpcs://127.0.0.1:9051, connected:false, connectAttempted:true
+    at checkState (/home/ssingh1/Desktop/HMS/fabric-samples/blockchain-explorer/node_modules/@grpc/grpc-js/build/src/client.js:77:26)
+    at Timeout._onTimeout (/home/ssingh1/Desktop/HMS/fabric-samples/blockchain-explorer/node_modules/@grpc/grpc-js/build/src/channel.js:525:17)
+    at listOnTimeout (node:internal/timers:559:17)
+    at processTimers (node:internal/timers:502:7) {
+  connectFailed: true
+}
+2026-06-25T09:53:39.028Z - [31merror[39m: [ServiceEndpoint]: Error: Failed to connect before the deadline on Endorser- name: peer0.pharmacy.example.com, url:grpcs://127.0.0.1:10051, connected:false, connectAttempted:true
+2026-06-25T09:53:39.028Z - [31merror[39m: [ServiceEndpoint]: waitForReady - Failed to connect to remote gRPC server peer0.pharmacy.example.com url:grpcs://127.0.0.1:10051 timeout:3000
+2026-06-25T09:53:39.028Z - [32minfo[39m: [NetworkConfig]: buildPeer - Unable to connect to the endorser peer0.pharmacy.example.com due to Error: Failed to connect before the deadline on Endorser- name: peer0.pharmacy.example.com, url:grpcs://127.0.0.1:10051, connected:false, connectAttempted:true
+    at checkState (/home/ssingh1/Desktop/HMS/fabric-samples/blockchain-explorer/node_modules/@grpc/grpc-js/build/src/client.js:77:26)
+    at Timeout._onTimeout (/home/ssingh1/Desktop/HMS/fabric-samples/blockchain-explorer/node_modules/@grpc/grpc-js/build/src/channel.js:525:17)
+    at listOnTimeout (node:internal/timers:559:17)
+    at processTimers (node:internal/timers:502:7) {
+  connectFailed: true
+}
+2026-06-25T09:53:42.031Z - [31merror[39m: [ServiceEndpoint]: Error: Failed to connect before the deadline on Endorser- name: peer0.insurance.example.com, url:grpcs://127.0.0.1:11051, connected:false, connectAttempted:true
+2026-06-25T09:53:42.031Z - [31merror[39m: [ServiceEndpoint]: waitForReady - Failed to connect to remote gRPC server peer0.insurance.example.com url:grpcs://127.0.0.1:11051 timeout:3000
+2026-06-25T09:53:42.031Z - [32minfo[39m: [NetworkConfig]: buildPeer - Unable to connect to the endorser peer0.insurance.example.com due to Error: Failed to connect before the deadline on Endorser- name: peer0.insurance.example.com, url:grpcs://127.0.0.1:11051, connected:false, connectAttempted:true
+    at checkState (/home/ssingh1/Desktop/HMS/fabric-samples/blockchain-explorer/node_modules/@grpc/grpc-js/build/src/client.js:77:26)
+    at Timeout._onTimeout (/home/ssingh1/Desktop/HMS/fabric-samples/blockchain-explorer/node_modules/@grpc/grpc-js/build/src/channel.js:525:17)
+    at listOnTimeout (node:internal/timers:559:17)
+    at processTimers (node:internal/timers:502:7) {
+  connectFailed: true
+}
+2026-06-25T09:53:45.034Z - [31merror[39m: [ServiceEndpoint]: Error: Failed to connect before the deadline on Endorser- name: peer0.patientaccess.example.com, url:grpcs://127.0.0.1:12051, connected:false, connectAttempted:true
+2026-06-25T09:53:45.034Z - [31merror[39m: [ServiceEndpoint]: waitForReady - Failed to connect to remote gRPC server peer0.patientaccess.example.com url:grpcs://127.0.0.1:12051 timeout:3000
+2026-06-25T09:53:45.034Z - [32minfo[39m: [NetworkConfig]: buildPeer - Unable to connect to the endorser peer0.patientaccess.example.com due to Error: Failed to connect before the deadline on Endorser- name: peer0.patientaccess.example.com, url:grpcs://127.0.0.1:12051, connected:false, connectAttempted:true
+    at checkState (/home/ssingh1/Desktop/HMS/fabric-samples/blockchain-explorer/node_modules/@grpc/grpc-js/build/src/client.js:77:26)
+    at Timeout._onTimeout (/home/ssingh1/Desktop/HMS/fabric-samples/blockchain-explorer/node_modules/@grpc/grpc-js/build/src/channel.js:525:17)
+    at listOnTimeout (node:internal/timers:559:17)
+    at processTimers (node:internal/timers:502:7) {
+  connectFailed: true
+}
+2026-06-25T09:53:48.048Z - [31merror[39m: [ServiceEndpoint]: Error: Failed to connect before the deadline on Discoverer- name: peer0.hospitaladmin.example.com, url:grpcs://127.0.0.1:7051, connected:false, connectAttempted:true
+2026-06-25T09:53:48.049Z - [31merror[39m: [ServiceEndpoint]: waitForReady - Failed to connect to remote gRPC server peer0.hospitaladmin.example.com url:grpcs://127.0.0.1:7051 timeout:3000
+2026-06-25T09:53:48.049Z - [31merror[39m: [ServiceEndpoint]: ServiceEndpoint grpcs://127.0.0.1:7051 reset connection failed :: Error: Failed to connect before the deadline on Discoverer- name: peer0.hospitaladmin.example.com, url:grpcs://127.0.0.1:7051, connected:false, connectAttempted:true
+2026-06-25T09:53:48.049Z - [31merror[39m: [DiscoveryService]: send[auditchannel] - no discovery results
+Server stopped
+npm notice 
+npm notice New major version of npm available! 8.19.4 -> 11.17.0
+npm notice Changelog: <https://github.com/npm/cli/releases/tag/v11.17.0>
+npm notice Run `npm install -g npm@11.17.0` to update!
+npm notice 
