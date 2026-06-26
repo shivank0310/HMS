@@ -4,11 +4,26 @@
 #
 
 services:
-  peer0.org1.example.com:
+  peer0.hospitaladmin.example.com:
     volumes:
       - ./podman/peercfg:/etc/hyperledger/peercfg
 
-  peer0.org2.example.com:
+  peer0.clinicalstaff.example.com:
     volumes:
       - ./podman/peercfg:/etc/hyperledger/peercfg
 
+  peer0.diagnosticstaff.example.com:
+    volumes:
+      - ./podman/peercfg:/etc/hyperledger/peercfg
+
+  peer0.pharmacy.example.com:
+    volumes:
+      - ./podman/peercfg:/etc/hyperledger/peercfg
+
+  peer0.insurance.example.com:
+    volumes:
+      - ./podman/peercfg:/etc/hyperledger/peercfg
+
+  peer0.patientaccess.example.com:
+    volumes:
+      - ./podman/peercfg:/etc/hyperledger/peercfg

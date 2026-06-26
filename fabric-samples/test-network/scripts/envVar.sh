@@ -1,29 +1,80 @@
 #!/usr/bin/env bash
 #
-# Copyright IBM Corp All Rights Reserved
-#
-# SPDX-License-Identifier: Apache-2.0
+# This is a collection of bash functions used by different scripts.
 #
 
-# This is a collection of bash functions used by different scripts
-
-# imports
-# test network home var targets to test-network folder
-# the reason we use a var here is to accommodate scenarios
-# where execution occurs from folders outside of default as $PWD, such as the test-network/addOrg3 folder.
-# For setting environment variables, simple relative paths like ".." could lead to unintended references
-# due to how they interact with FABRIC_CFG_PATH. It's advised to specify paths more explicitly,
-# such as using "../${PWD}", to ensure that Fabric's environment variables are pointing to the correct paths.
 TEST_NETWORK_HOME=${TEST_NETWORK_HOME:-${PWD}}
 . ${TEST_NETWORK_HOME}/scripts/utils.sh
 
 export CORE_PEER_TLS_ENABLED=true
 export ORDERER_CA=${TEST_NETWORK_HOME}/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem
-export PEER0_ORG1_CA=${TEST_NETWORK_HOME}/organizations/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem
-export PEER0_ORG2_CA=${TEST_NETWORK_HOME}/organizations/peerOrganizations/org2.example.com/tlsca/tlsca.org2.example.com-cert.pem
-export PEER0_ORG3_CA=${TEST_NETWORK_HOME}/organizations/peerOrganizations/org3.example.com/tlsca/tlsca.org3.example.com-cert.pem
+export PEER0_ORG1_CA=${TEST_NETWORK_HOME}/organizations/peerOrganizations/hospitaladmin.example.com/tlsca/tlsca.hospitaladmin.example.com-cert.pem
+export PEER0_ORG2_CA=${TEST_NETWORK_HOME}/organizations/peerOrganizations/clinicalstaff.example.com/tlsca/tlsca.clinicalstaff.example.com-cert.pem
+export PEER0_ORG3_CA=${TEST_NETWORK_HOME}/organizations/peerOrganizations/diagnosticstaff.example.com/tlsca/tlsca.diagnosticstaff.example.com-cert.pem
+export PEER0_ORG4_CA=${TEST_NETWORK_HOME}/organizations/peerOrganizations/pharmacy.example.com/tlsca/tlsca.pharmacy.example.com-cert.pem
+export PEER0_ORG5_CA=${TEST_NETWORK_HOME}/organizations/peerOrganizations/insurance.example.com/tlsca/tlsca.insurance.example.com-cert.pem
+export PEER0_ORG6_CA=${TEST_NETWORK_HOME}/organizations/peerOrganizations/patientaccess.example.com/tlsca/tlsca.patientaccess.example.com-cert.pem
 
-# Set environment variables for the peer org
+peer_host_for_org() {
+  case "$1" in
+    1) echo "peer0.hospitaladmin.example.com" ;;
+    2) echo "peer0.clinicalstaff.example.com" ;;
+    3) echo "peer0.diagnosticstaff.example.com" ;;
+    4) echo "peer0.pharmacy.example.com" ;;
+    5) echo "peer0.insurance.example.com" ;;
+    6) echo "peer0.patientaccess.example.com" ;;
+    *) errorln "ORG Unknown"; return 1 ;;
+  esac
+}
+
+org_domain_for_org() {
+  case "$1" in
+    1) echo "hospitaladmin.example.com" ;;
+    2) echo "clinicalstaff.example.com" ;;
+    3) echo "diagnosticstaff.example.com" ;;
+    4) echo "pharmacy.example.com" ;;
+    5) echo "insurance.example.com" ;;
+    6) echo "patientaccess.example.com" ;;
+    *) errorln "ORG Unknown"; return 1 ;;
+  esac
+}
+
+peer_port_for_org() {
+  case "$1" in
+    1) echo "7051" ;;
+    2) echo "8051" ;;
+    3) echo "9051" ;;
+    4) echo "10051" ;;
+    5) echo "11051" ;;
+    6) echo "12051" ;;
+    *) errorln "ORG Unknown"; return 1 ;;
+  esac
+}
+
+mspid_for_org() {
+  case "$1" in
+    1) echo "HospitalAdminMSP" ;;
+    2) echo "ClinicalStaffMSP" ;;
+    3) echo "DiagnosticStaffMSP" ;;
+    4) echo "PharmacyServicesMSP" ;;
+    5) echo "InsuranceProviderMSP" ;;
+    6) echo "PatientAccessMSP" ;;
+    *) errorln "ORG Unknown"; return 1 ;;
+  esac
+}
+
+peer_ca_for_org() {
+  case "$1" in
+    1) echo "$PEER0_ORG1_CA" ;;
+    2) echo "$PEER0_ORG2_CA" ;;
+    3) echo "$PEER0_ORG3_CA" ;;
+    4) echo "$PEER0_ORG4_CA" ;;
+    5) echo "$PEER0_ORG5_CA" ;;
+    6) echo "$PEER0_ORG6_CA" ;;
+    *) errorln "ORG Unknown"; return 1 ;;
+  esac
+}
+
 setGlobals() {
   local USING_ORG=""
   if [ -z "$OVERRIDE_ORG" ]; then
@@ -31,53 +82,37 @@ setGlobals() {
   else
     USING_ORG="${OVERRIDE_ORG}"
   fi
+
   infoln "Using organization ${USING_ORG}"
-  if [ $USING_ORG -eq 1 ]; then
-    export CORE_PEER_LOCALMSPID=Org1MSP
-    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG1_CA
-    export CORE_PEER_MSPCONFIGPATH=${TEST_NETWORK_HOME}/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
-    export CORE_PEER_ADDRESS=localhost:7051
-  elif [ $USING_ORG -eq 2 ]; then
-    export CORE_PEER_LOCALMSPID=Org2MSP
-    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG2_CA
-    export CORE_PEER_MSPCONFIGPATH=${TEST_NETWORK_HOME}/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
-    export CORE_PEER_ADDRESS=localhost:9051
-  elif [ $USING_ORG -eq 3 ]; then
-    export CORE_PEER_LOCALMSPID=Org3MSP
-    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG3_CA
-    export CORE_PEER_MSPCONFIGPATH=${TEST_NETWORK_HOME}/organizations/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp
-    export CORE_PEER_ADDRESS=localhost:11051
-  else
-    errorln "ORG Unknown"
-  fi
+
+  CORE_PEER_LOCALMSPID=$(mspid_for_org "$USING_ORG") || return 1
+  CORE_PEER_TLS_ROOTCERT_FILE=$(peer_ca_for_org "$USING_ORG") || return 1
+  ORG_DOMAIN=$(org_domain_for_org "$USING_ORG") || return 1
+  CORE_PEER_MSPCONFIGPATH=${TEST_NETWORK_HOME}/organizations/peerOrganizations/${ORG_DOMAIN}/users/Admin@${ORG_DOMAIN}/msp
+  CORE_PEER_ADDRESS=localhost:$(peer_port_for_org "$USING_ORG") || return 1
+
+  export CORE_PEER_LOCALMSPID CORE_PEER_TLS_ROOTCERT_FILE CORE_PEER_MSPCONFIGPATH CORE_PEER_ADDRESS
 
   if [ "$VERBOSE" = "true" ]; then
     env | grep CORE
   fi
 }
 
-# parsePeerConnectionParameters $@
-# Helper function that sets the peer connection parameters for a chaincode
-# operation
 parsePeerConnectionParameters() {
   PEER_CONN_PARMS=()
   PEERS=""
   while [ "$#" -gt 0 ]; do
-    setGlobals $1
-    PEER="peer0.org$1"
-    ## Set peer addresses
-    if [ -z "$PEERS" ]
-    then
-	PEERS="$PEER"
+    setGlobals "$1"
+    PEER=$(peer_host_for_org "$1")
+    if [ -z "$PEERS" ]; then
+      PEERS="$PEER"
     else
-	PEERS="$PEERS $PEER"
+      PEERS="$PEERS $PEER"
     fi
     PEER_CONN_PARMS=("${PEER_CONN_PARMS[@]}" --peerAddresses $CORE_PEER_ADDRESS)
-    ## Set path to TLS certificate
     CA=PEER0_ORG$1_CA
     TLSINFO=(--tlsRootCertFiles "${!CA}")
     PEER_CONN_PARMS=("${PEER_CONN_PARMS[@]}" "${TLSINFO[@]}")
-    # shift by one to get to the next organization
     shift
   done
 }

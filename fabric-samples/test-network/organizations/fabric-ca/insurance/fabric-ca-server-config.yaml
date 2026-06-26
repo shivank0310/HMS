@@ -1,0 +1,38 @@
+version: 1.2.0
+port: 11054
+tls:
+  enabled: true
+ca:
+  name: ca-insurance
+csr:
+  cn: ca.insurance.example.com
+  names:
+    - C: US
+      ST: "North Carolina"
+      L: "Durham"
+      O: insurance.example.com
+      OU:
+  hosts:
+    - localhost
+    - insurance.example.com
+  ca:
+    expiry: 131400h
+    pathlength: 1
+registry:
+  maxenrollments: -1
+  identities:
+    - name: admin
+      pass: adminpw
+      type: client
+      affiliation: ""
+      attrs:
+        hf.Registrar.Roles: "*"
+        hf.Registrar.DelegateRoles: "*"
+        hf.Revoker: true
+        hf.IntermediateCA: true
+        hf.GenCRL: true
+        hf.Registrar.Attributes: "*"
+        hf.AffiliationMgr: true
+db:
+  type: sqlite3
+  datasource: fabric-ca-server.db

@@ -1,0 +1,7 @@
+.section-header--centered {
+  text-align: center;
+}
+
+.section-header--centered .section-desc {
+  margin: 0 auto;
+}

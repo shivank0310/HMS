@@ -3,65 +3,266 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
+# networks:
+#   test:
+#     name: fabric_test
+
+# services:
+#   couchdb0:
+#     container_name: couchdb0
+#     image: couchdb:3.4.2
+#     labels:
+#       service: hyperledger-fabric
+#     # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
+#     # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
+#     environment:
+#       - COUCHDB_USER=admin
+#       - COUCHDB_PASSWORD=adminpw
+#     # Comment/Uncomment the port mapping if you want to hide/expose the CouchDB service,
+#     # for example map it to utilize Fauxton User Interface in dev environments.
+#     ports:
+#       - "5984:5984"
+#     networks:
+#       - test
+
+#   peer0.org1.example.com:
+#     environment:
+#       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+#       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0:5984
+#       # The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+#       # provide the credentials for ledger to connect to CouchDB.  The username and password must
+#       # match the username and password set for the associated CouchDB.
+#       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+#       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+#     depends_on:
+#       - couchdb0
+
+#   couchdb1:
+#     container_name: couchdb1
+#     image: couchdb:3.4.2
+#     labels:
+#       service: hyperledger-fabric
+#     # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
+#     # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
+#     environment:
+#       - COUCHDB_USER=admin
+#       - COUCHDB_PASSWORD=adminpw
+#     # Comment/Uncomment the port mapping if you want to hide/expose the CouchDB service,
+#     # for example map it to utilize Fauxton User Interface in dev environments.
+#     ports:
+#       - "7984:5984"
+#     networks:
+#       - test
+
+#   peer0.org2.example.com:
+#     environment:
+#       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+#       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984
+#       # The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+#       # provide the credentials for ledger to connect to CouchDB.  The username and password must
+#       # match the username and password set for the associated CouchDB.
+#       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+#       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+#     depends_on:
+#       - couchdb1
+
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
 networks:
   test:
     name: fabric_test
 
 services:
+  # ==========================================================
+  # CouchDB - Hospital Admin
+  # ==========================================================
   couchdb0:
     container_name: couchdb0
     image: couchdb:3.4.2
     labels:
       service: hyperledger-fabric
-    # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
-    # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
     environment:
       - COUCHDB_USER=admin
       - COUCHDB_PASSWORD=adminpw
-    # Comment/Uncomment the port mapping if you want to hide/expose the CouchDB service,
-    # for example map it to utilize Fauxton User Interface in dev environments.
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -u admin:adminpw http://localhost:5984/_up >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
     ports:
       - "5984:5984"
     networks:
       - test
 
-  peer0.org1.example.com:
+  peer0.hospitaladmin.example.com:
     environment:
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0:5984
-      # The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
-      # provide the credentials for ledger to connect to CouchDB.  The username and password must
-      # match the username and password set for the associated CouchDB.
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
     depends_on:
-      - couchdb0
+      couchdb0:
+        condition: service_healthy
 
+  # ==========================================================
+  # CouchDB - Clinical Staff
+  # ==========================================================
   couchdb1:
     container_name: couchdb1
     image: couchdb:3.4.2
     labels:
       service: hyperledger-fabric
-    # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
-    # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
     environment:
       - COUCHDB_USER=admin
       - COUCHDB_PASSWORD=adminpw
-    # Comment/Uncomment the port mapping if you want to hide/expose the CouchDB service,
-    # for example map it to utilize Fauxton User Interface in dev environments.
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -u admin:adminpw http://localhost:5984/_up >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    ports:
+      - "6984:5984"
+    networks:
+      - test
+
+  peer0.clinicalstaff.example.com:
+    environment:
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    depends_on:
+      couchdb1:
+        condition: service_healthy
+  # ==========================================================
+  # CouchDB - Diagnostic Staff
+  # ==========================================================
+  couchdb2:
+    container_name: couchdb2
+    image: couchdb:3.4.2
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -u admin:adminpw http://localhost:5984/_up >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
     ports:
       - "7984:5984"
     networks:
       - test
 
-  peer0.org2.example.com:
+  peer0.diagnosticstaff.example.com:
     environment:
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984
-      # The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
-      # provide the credentials for ledger to connect to CouchDB.  The username and password must
-      # match the username and password set for the associated CouchDB.
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
     depends_on:
-      - couchdb1
+      couchdb2:
+        condition: service_healthy
+
+  # ==========================================================
+  # CouchDB - Pharmacy Services
+  # ==========================================================
+  couchdb3:
+    container_name: couchdb3
+    image: couchdb:3.4.2
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -u admin:adminpw http://localhost:5984/_up >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    ports:
+      - "8984:5984"
+    networks:
+      - test
+
+  peer0.pharmacy.example.com:
+    environment:
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb3:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    depends_on:
+      couchdb3:
+        condition: service_healthy
+
+  # ==========================================================
+  # CouchDB - Insurance Provider
+  # ==========================================================
+  couchdb4:
+    container_name: couchdb4
+    image: couchdb:3.4.2
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -u admin:adminpw http://localhost:5984/_up >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    ports:
+      - "9984:5984"
+    networks:
+      - test
+
+  peer0.insurance.example.com:
+    environment:
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb4:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    depends_on:
+      couchdb4:
+        condition: service_healthy
+
+  # ==========================================================
+  # CouchDB - Patient Access
+  # ==========================================================
+  couchdb5:
+    container_name: couchdb5
+    image: couchdb:3.4.2
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -u admin:adminpw http://localhost:5984/_up >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    ports:
+      - "10984:5984"
+    networks:
+      - test
+
+  peer0.patientaccess.example.com:
+    environment:
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb5:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    depends_on:
+      couchdb5:
+        condition: service_healthy

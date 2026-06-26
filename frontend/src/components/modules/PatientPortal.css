@@ -1,0 +1,145 @@
+.welcome-text {
+  font-size: 0.85rem;
+  color: var(--white);
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.insights-label {
+  font-size: 0.72rem;
+  color: var(--cyan);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.risk-score-block {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.risk-circle {
+  position: relative;
+  width: 70px;
+  height: 70px;
+}
+
+.risk-circle svg {
+  transform: rotate(-90deg);
+}
+
+.risk-circle-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.risk-pct {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--white);
+  line-height: 1;
+}
+
+.risk-level {
+  font-size: 0.55rem;
+  color: var(--green);
+  font-weight: 600;
+}
+
+.risk-details {
+  flex: 1;
+}
+
+.risk-detail-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+
+.risk-detail-list {
+  list-style: none;
+}
+
+.risk-detail-list li {
+  font-size: 0.72rem;
+  color: var(--muted);
+  padding: 2px 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.risk-detail-list li::before {
+  content: '•';
+  color: var(--amber);
+}
+
+.health-score-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--navy);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 0.8rem;
+}
+
+.health-score-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.health-score-val {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--green);
+}
+
+.health-score-sub {
+  font-size: 0.65rem;
+  color: var(--green);
+}
+
+.health-score-right {
+  text-align: right;
+}
+
+.recommendations-box {
+  margin-top: 0.8rem;
+}
+
+.rec-label {
+  font-size: 0.65rem;
+  color: var(--cyan);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.rec-list {
+  list-style: none;
+}
+
+.rec-list li {
+  font-size: 0.75rem;
+  color: var(--text);
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rec-list li::before {
+  content: '✓';
+  color: var(--green);
+  font-weight: 700;
+  font-size: 0.65rem;
+}

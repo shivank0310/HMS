@@ -1,0 +1,19 @@
+:root {
+  --navy: #0a0f2e;
+  --navy-mid: #111936;
+  --navy-card: #141b3c;
+  --navy-border: #1e2a50;
+  --cyan: #00d4ff;
+  --cyan-dim: rgba(0, 212, 255, 0.12);
+  --green: #00e5a0;
+  --green-dim: rgba(0, 229, 160, 0.12);
+  --amber: #ffb547;
+  --amber-dim: rgba(255, 181, 71, 0.12);
+  --red: #ff4b6e;
+  --red-dim: rgba(255, 75, 110, 0.12);
+  --purple: #7c5cfc;
+  --purple-dim: rgba(124, 92, 252, 0.12);
+  --white: #f0f8ff;
+  --muted: #6b7db3;
+  --text: #c8d8f0;
+}

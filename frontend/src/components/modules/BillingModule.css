@@ -1,0 +1,117 @@
+.invoice-id {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 0.8rem;
+}
+
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0.8rem;
+}
+
+.invoice-table td {
+  padding: 6px 0;
+  font-size: 0.75rem;
+}
+
+.invoice-table td:first-child {
+  color: var(--muted);
+}
+
+.invoice-table td:last-child {
+  text-align: right;
+  color: var(--white);
+  font-weight: 600;
+}
+
+.invoice-table .total-row td {
+  border-top: 1px solid var(--navy-border);
+  padding-top: 8px;
+  font-weight: 700;
+  color: var(--cyan);
+  font-size: 0.82rem;
+}
+
+.fraud-score-box {
+  background: var(--green-dim);
+  border: 1px solid rgba(0, 229, 160, 0.25);
+  border-radius: 10px;
+  padding: 0.9rem;
+}
+
+.fraud-pct {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--green);
+}
+
+.fraud-risk-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.fraud-label {
+  font-size: 0.65rem;
+  color: var(--green);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.analysis-list {
+  list-style: none;
+  margin-top: 8px;
+}
+
+.analysis-list li {
+  font-size: 0.72rem;
+  color: var(--text);
+  padding: 3px 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.analysis-list li::before {
+  content: '✓';
+  color: var(--green);
+}
+
+.billing-actions {
+  margin-top: 0.8rem;
+  display: flex;
+  gap: 8px;
+}
+
+.billing-btn {
+  flex: 1;
+}
+
+.cost-optimization {
+  margin-top: 0.8rem;
+  background: var(--cyan-dim);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 8px;
+  padding: 0.7rem;
+}
+
+.cost-optimization-label {
+  font-size: 0.65rem;
+  color: var(--cyan);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.cost-optimization-text {
+  font-size: 0.75rem;
+  color: var(--text);
+}
+
+.cost-optimization-text strong {
+  color: var(--green);
+}

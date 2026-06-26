@@ -1,0 +1,21 @@
+{
+  "name": "medichain-emergency-chaincode",
+  "version": "1.0.0",
+  "description": "MediChain emergency channel chaincode with dynamic fields",
+  "main": "index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "fabric-chaincode-node start",
+    "start:server-nontls": "fabric-chaincode-node server --chaincode-address=$CHAINCODE_SERVER_ADDRESS --chaincode-id=$CHAINCODE_ID"
+  },
+  "engineStrict": true,
+  "license": "Apache-2.0",
+  "dependencies": {
+    "fabric-contract-api": "~2.5",
+    "fabric-shim": "~2.5",
+    "json-stringify-deterministic": "^1.0.0",
+    "sort-keys-recursive": "^2.1.0"
+  }
+}

@@ -1,0 +1,111 @@
+.hero-visual {
+  position: relative;
+  height: 460px;
+}
+
+.blockchain-visual-inner {
+  position: relative;
+  height: 100%;
+}
+
+.blockchain-card {
+  position: absolute;
+  background: var(--navy-card);
+  border: 1px solid var(--navy-border);
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+  backdrop-filter: blur(10px);
+}
+
+.bc1 {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 230px;
+}
+
+.bc2 {
+  top: 140px;
+  left: 0;
+  width: 200px;
+}
+
+.bc3 {
+  top: 140px;
+  right: 0;
+  width: 200px;
+}
+
+.bc4 {
+  top: 290px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 230px;
+}
+
+.bc-label {
+  font-size: 0.65rem;
+  color: var(--cyan);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+
+.bc-hash {
+  font-size: 0.6rem;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 8px;
+  word-break: break-all;
+}
+
+.bc-data {
+  font-size: 0.75rem;
+  color: var(--white);
+  font-weight: 500;
+}
+
+.bc-verified {
+  font-size: 0.65rem;
+  color: var(--green);
+  margin-top: 5px;
+}
+
+.bc-connector {
+  position: absolute;
+  animation: flow 2s linear infinite;
+}
+
+.conn-v {
+  width: 2px;
+  left: calc(50% - 1px);
+  background: linear-gradient(180deg, var(--cyan), var(--purple));
+}
+
+.conn-v1 {
+  top: 100px;
+  height: 55px;
+}
+
+.conn-v2 {
+  top: 250px;
+  height: 55px;
+  animation-duration: 2.3s;
+  background: linear-gradient(180deg, var(--purple), var(--cyan));
+}
+
+.conn-h {
+  top: 175px;
+  left: 200px;
+  right: 200px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+  animation-duration: 1.8s;
+}
+
+@media (max-width: 900px) {
+  .hero-visual {
+    display: none;
+  }
+}

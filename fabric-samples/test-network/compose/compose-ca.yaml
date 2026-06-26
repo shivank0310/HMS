@@ -9,13 +9,13 @@ networks:
 
 services:
 
-  ca_org1:
-    image: hyperledger/fabric-ca:latest
+  ca_hospitaladmin:
+    image: hyperledger/fabric-ca:${CA_IMAGETAG}
     labels:
       service: hyperledger-fabric
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-      - FABRIC_CA_SERVER_CA_NAME=ca-org1
+      - FABRIC_CA_SERVER_CA_NAME=ca-hospitaladmin
       - FABRIC_CA_SERVER_TLS_ENABLED=true
       - FABRIC_CA_SERVER_PORT=7054
       - FABRIC_CA_SERVER_OPERATIONS_LISTENADDRESS=0.0.0.0:17054
@@ -24,18 +24,18 @@ services:
       - "17054:17054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
-      - ../organizations/fabric-ca/org1:/etc/hyperledger/fabric-ca-server
-    container_name: ca_org1
+      - ../organizations/fabric-ca/hospitaladmin:/etc/hyperledger/fabric-ca-server
+    container_name: ca_hospitaladmin
     networks:
       - test
 
-  ca_org2:
-    image: hyperledger/fabric-ca:latest
+  ca_clinicalstaff:
+    image: hyperledger/fabric-ca:${CA_IMAGETAG}
     labels:
       service: hyperledger-fabric
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-      - FABRIC_CA_SERVER_CA_NAME=ca-org2
+      - FABRIC_CA_SERVER_CA_NAME=ca-clinicalstaff
       - FABRIC_CA_SERVER_TLS_ENABLED=true
       - FABRIC_CA_SERVER_PORT=8054
       - FABRIC_CA_SERVER_OPERATIONS_LISTENADDRESS=0.0.0.0:18054
@@ -44,24 +44,104 @@ services:
       - "18054:18054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
-      - ../organizations/fabric-ca/org2:/etc/hyperledger/fabric-ca-server
-    container_name: ca_org2
+      - ../organizations/fabric-ca/clinicalstaff:/etc/hyperledger/fabric-ca-server
+    container_name: ca_clinicalstaff
     networks:
       - test
 
-  ca_orderer:
-    image: hyperledger/fabric-ca:latest
+  ca_diagnosticstaff:
+    image: hyperledger/fabric-ca:${CA_IMAGETAG}
     labels:
       service: hyperledger-fabric
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-      - FABRIC_CA_SERVER_CA_NAME=ca-orderer
+      - FABRIC_CA_SERVER_CA_NAME=ca-diagnosticstaff
       - FABRIC_CA_SERVER_TLS_ENABLED=true
       - FABRIC_CA_SERVER_PORT=9054
       - FABRIC_CA_SERVER_OPERATIONS_LISTENADDRESS=0.0.0.0:19054
     ports:
       - "9054:9054"
       - "19054:19054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../organizations/fabric-ca/diagnosticstaff:/etc/hyperledger/fabric-ca-server
+    container_name: ca_diagnosticstaff
+    networks:
+      - test
+
+  ca_pharmacy:
+    image: hyperledger/fabric-ca:${CA_IMAGETAG}
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-pharmacy
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_PORT=10054
+      - FABRIC_CA_SERVER_OPERATIONS_LISTENADDRESS=0.0.0.0:20054
+    ports:
+      - "10054:10054"
+      - "20054:20054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../organizations/fabric-ca/pharmacy:/etc/hyperledger/fabric-ca-server
+    container_name: ca_pharmacy
+    networks:
+      - test
+
+  ca_insurance:
+    image: hyperledger/fabric-ca:${CA_IMAGETAG}
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-insurance
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_PORT=11054
+      - FABRIC_CA_SERVER_OPERATIONS_LISTENADDRESS=0.0.0.0:21054
+    ports:
+      - "11054:11054"
+      - "21054:21054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../organizations/fabric-ca/insurance:/etc/hyperledger/fabric-ca-server
+    container_name: ca_insurance
+    networks:
+      - test
+
+  ca_patientaccess:
+    image: hyperledger/fabric-ca:${CA_IMAGETAG}
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-patientaccess
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_PORT=12054
+      - FABRIC_CA_SERVER_OPERATIONS_LISTENADDRESS=0.0.0.0:22054
+    ports:
+      - "12054:12054"
+      - "22054:22054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../organizations/fabric-ca/patientaccess:/etc/hyperledger/fabric-ca-server
+    container_name: ca_patientaccess
+    networks:
+      - test
+
+  ca_orderer:
+    image: hyperledger/fabric-ca:${CA_IMAGETAG}
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-orderer
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_PORT=13054
+      - FABRIC_CA_SERVER_OPERATIONS_LISTENADDRESS=0.0.0.0:23054
+    ports:
+      - "13054:13054"
+      - "23054:23054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
       - ../organizations/fabric-ca/ordererOrg:/etc/hyperledger/fabric-ca-server

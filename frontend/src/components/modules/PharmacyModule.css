@@ -1,0 +1,101 @@
+.drug-check-box {
+  background: var(--amber-dim);
+  border: 1px solid rgba(255, 181, 71, 0.25);
+  border-radius: 10px;
+  padding: 0.9rem;
+  margin-bottom: 0.8rem;
+}
+
+.drug-check-label {
+  font-size: 0.65rem;
+  color: var(--amber);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.drug-patient-info {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.drug-interaction-result {
+  font-size: 0.8rem;
+  color: var(--amber);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.drug-rec {
+  font-size: 0.72rem;
+  color: var(--text);
+  margin-top: 5px;
+}
+
+.drug-rec strong {
+  color: var(--amber);
+}
+
+.stock-forecast {
+  margin-top: 0.8rem;
+}
+
+.forecast-label {
+  font-size: 0.65rem;
+  color: var(--cyan);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.forecast-chart-wrap {
+  background: var(--navy);
+  border-radius: 8px;
+  padding: 0.8rem;
+  margin-top: 6px;
+}
+
+.forecast-legend {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.62rem;
+  color: var(--muted);
+}
+
+.legend-line {
+  width: 12px;
+  height: 2px;
+  border-radius: 1px;
+}
+
+.legend-line--cyan {
+  background: var(--cyan);
+}
+
+.legend-line--purple {
+  background: var(--purple);
+}
+
+.forecast-suggestion {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: var(--cyan);
+}
+
+.pharmacy-action {
+  width: 100%;
+  margin-top: 0.8rem;
+  padding: 9px;
+}

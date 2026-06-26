@@ -1,0 +1,103 @@
+.alerts-label {
+  font-size: 0.72rem;
+  color: var(--red);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.alert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 0.8rem;
+}
+
+.alert-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--navy);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.alert-patient {
+  font-size: 0.78rem;
+  color: var(--white);
+  font-weight: 600;
+}
+
+.alert-condition {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.risk-badge {
+  font-size: 0.62rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.risk-high {
+  background: var(--red-dim);
+  color: var(--red);
+  border: 1px solid rgba(255, 75, 110, 0.3);
+}
+
+.risk-medium {
+  background: var(--amber-dim);
+  color: var(--amber);
+  border: 1px solid rgba(255, 181, 71, 0.3);
+}
+
+.risk-low {
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid rgba(0, 229, 160, 0.3);
+}
+
+.prediction-box {
+  background: var(--red-dim);
+  border: 1px solid rgba(255, 75, 110, 0.25);
+  border-radius: 10px;
+  padding: 0.9rem;
+}
+
+.pred-label {
+  font-size: 0.65rem;
+  color: var(--red);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.pred-pct {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--red);
+  line-height: 1;
+}
+
+.pred-desc {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.pred-action {
+  font-size: 0.72rem;
+  color: var(--amber);
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.emergency-action {
+  width: 100%;
+  margin-top: 0.8rem;
+  padding: 10px;
+}

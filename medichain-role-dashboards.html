@@ -1,0 +1,1310 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediChain HMS — Role-Based Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0A0F2E;
+    --navy-mid: #111936;
+    --navy-card: #141B3C;
+    --navy-border: #1E2A50;
+    --cyan: #00D4FF;
+    --cyan-dim: rgba(0,212,255,0.12);
+    --green: #00E5A0;
+    --green-dim: rgba(0,229,160,0.12);
+    --amber: #FFB547;
+    --amber-dim: rgba(255,181,71,0.12);
+    --red: #FF4B6E;
+    --red-dim: rgba(255,75,110,0.12);
+    --purple: #7C5CFC;
+    --purple-dim: rgba(124,92,252,0.12);
+    --white: #F0F8FF;
+    --muted: #6B7DB3;
+    --text: #C8D8F0;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:var(--navy); color:var(--text); overflow-x:hidden; }
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:var(--navy); }
+  ::-webkit-scrollbar-thumb { background:var(--navy-border); border-radius:3px; }
+
+  /* ─── LOGIN SCREEN ─── */
+  #login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at 20% 50%, rgba(0,212,255,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(124,92,252,0.07) 0%, transparent 60%),
+                var(--navy);
+    padding: 2rem;
+  }
+  .login-box {
+    width: 100%;
+    max-width: 440px;
+  }
+  .login-brand {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+  .login-logo {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    border-radius: 16px;
+    display: inline-flex; align-items:center; justify-content:center;
+    font-size: 32px; margin-bottom: 1rem;
+  }
+  .login-brand h1 {
+    font-size: 1.6rem; font-weight: 800;
+    background: linear-gradient(90deg, var(--cyan), var(--purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .login-brand p { color: var(--muted); font-size: 0.85rem; margin-top: 4px; }
+
+  .login-card {
+    background: var(--navy-card);
+    border: 1px solid var(--navy-border);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+  .login-card h2 {
+    font-size: 1.1rem; font-weight: 700; color: var(--white);
+    margin-bottom: 1.5rem; text-align: center;
+  }
+  .form-group { margin-bottom: 1.2rem; }
+  .form-group label { display:block; font-size:0.8rem; font-weight:600; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px; }
+  .form-control {
+    width:100%; padding:10px 14px;
+    background: var(--navy-mid); border: 1px solid var(--navy-border);
+    border-radius: 8px; color: var(--white); font-size: 0.9rem; font-family:inherit;
+    transition: border-color 0.2s;
+  }
+  .form-control:focus { outline:none; border-color:var(--cyan); }
+  select.form-control option { background: var(--navy-mid); }
+
+  .btn-login {
+    width:100%; padding:12px;
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    border:none; border-radius:8px; color:var(--navy);
+    font-weight:700; font-size:0.95rem; cursor:pointer; font-family:inherit;
+    transition: opacity 0.2s, transform 0.2s; margin-top: 0.5rem;
+  }
+  .btn-login:hover { opacity:0.9; transform:translateY(-1px); }
+
+  .role-cards {
+    display: grid; grid-template-columns:1fr 1fr; gap:0.8rem; margin-top:1.5rem;
+  }
+  .role-card {
+    padding:0.8rem 1rem; border-radius:8px; border:1px solid var(--navy-border);
+    cursor:pointer; transition:all 0.2s; text-align:center; background:var(--navy-mid);
+  }
+  .role-card:hover, .role-card.selected {
+    border-color:var(--cyan); background:var(--cyan-dim); color:var(--cyan);
+  }
+  .role-card .role-icon { font-size:1.4rem; margin-bottom:0.3rem; }
+  .role-card .role-name { font-size:0.75rem; font-weight:600; color:var(--text); }
+  .role-card.selected .role-name { color:var(--cyan); }
+
+  .login-error {
+    color:var(--red); font-size:0.82rem; margin-top:0.8rem; text-align:center;
+    padding:0.6rem; background:var(--red-dim); border-radius:6px; display:none;
+  }
+
+  /* ─── APP SHELL ─── */
+  #app { display:none; }
+  .dashboard-container {
+    display: grid; grid-template-columns: 260px 1fr; min-height:100vh;
+  }
+
+  /* ─── SIDEBAR ─── */
+  .sidebar {
+    background: var(--navy-mid); border-right:1px solid var(--navy-border);
+    padding:1.5rem 1.2rem; position:fixed; left:0; top:0;
+    height:100vh; width:260px; overflow-y:auto; z-index:100;
+    display:flex; flex-direction:column;
+  }
+  .sidebar-brand {
+    display:flex; align-items:center; gap:10px; margin-bottom:1.8rem; text-decoration:none;
+  }
+  .sidebar-logo {
+    width:38px; height:38px;
+    background:linear-gradient(135deg, var(--cyan), var(--purple));
+    border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:18px;
+  }
+  .sidebar-title { font-size:0.95rem; font-weight:800; background:linear-gradient(90deg,var(--cyan),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .sidebar-subtitle { font-size:0.68rem; color:var(--muted); }
+
+  /* role badge in sidebar */
+  .sidebar-role-badge {
+    display:flex; align-items:center; gap:10px;
+    background:var(--navy-card); border:1px solid var(--navy-border);
+    border-radius:10px; padding:0.8rem 1rem; margin-bottom:1.5rem;
+  }
+  .srb-avatar {
+    width:34px; height:34px; border-radius:50%;
+    background:linear-gradient(135deg,var(--cyan),var(--purple));
+    display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;
+  }
+  .srb-name { font-size:0.85rem; font-weight:600; color:var(--white); }
+  .srb-role { font-size:0.7rem; color:var(--muted); margin-top:1px; }
+
+  .sidebar-label { font-size:0.68rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:0.6rem; padding-left:4px; }
+  .sidebar-menu { list-style:none; margin-bottom:1.5rem; }
+  .sidebar-menu li { margin-bottom:3px; }
+  .sidebar-menu a {
+    display:flex; align-items:center; gap:10px; padding:9px 10px;
+    border-radius:7px; color:var(--muted); text-decoration:none;
+    font-size:0.85rem; font-weight:500; transition:all 0.2s; cursor:pointer;
+  }
+  .sidebar-menu a:hover, .sidebar-menu a.active {
+    background:var(--cyan-dim); color:var(--cyan);
+  }
+  .sidebar-menu a.active { border-left:2px solid var(--cyan); padding-left:8px; }
+
+  .logout-btn {
+    margin-top:auto; width:100%; padding:10px;
+    background:var(--red-dim); border:1px solid rgba(255,75,110,0.3);
+    border-radius:8px; color:var(--red); font-size:0.85rem; font-weight:600;
+    cursor:pointer; font-family:inherit; transition:all 0.2s;
+  }
+  .logout-btn:hover { background:rgba(255,75,110,0.2); }
+
+  /* ─── MAIN ─── */
+  .main-content {
+    margin-left:260px; padding:2rem;
+    background:linear-gradient(180deg,var(--navy) 0%,var(--navy-mid) 100%);
+    min-height:100vh;
+  }
+
+  .top-bar {
+    display:flex; justify-content:space-between; align-items:center;
+    background:var(--navy-card); border:1px solid var(--navy-border);
+    border-radius:12px; padding:1rem 1.5rem; margin-bottom:2rem;
+  }
+  .top-bar-title { font-size:1.2rem; font-weight:700; color:var(--white); }
+  .top-bar-subtitle { font-size:0.78rem; color:var(--muted); margin-top:2px; }
+  .top-bar-right { display:flex; align-items:center; gap:1.2rem; }
+  .search-box {
+    background:var(--navy-mid); border:1px solid var(--navy-border);
+    border-radius:7px; padding:7px 12px; color:var(--text); font-size:0.82rem; width:220px; font-family:inherit;
+  }
+  .search-box:focus { outline:none; border-color:var(--cyan); }
+  .notif-btn {
+    position:relative; background:none; border:none; font-size:20px; cursor:pointer; padding:4px;
+  }
+  .notif-dot {
+    position:absolute; top:2px; right:2px; width:8px; height:8px;
+    background:var(--red); border-radius:50%; border:2px solid var(--navy-card);
+  }
+
+  /* ─── SECTIONS ─── */
+  .dash-section { display:none; }
+  .dash-section.active { display:block; animation:fadeIn 0.3s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ─── GRIDS ─── */
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+  .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
+  .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:1.5rem; }
+
+  /* ─── CARD ─── */
+  .card {
+    background:var(--navy-card); border:1px solid var(--navy-border);
+    border-radius:12px; padding:1.5rem; transition:all 0.2s;
+  }
+  .card:hover { border-color:rgba(0,212,255,0.3); }
+  .card-title { font-size:0.95rem; font-weight:700; color:var(--white); margin-bottom:4px; }
+  .card-sub { font-size:0.78rem; color:var(--muted); margin-bottom:1.2rem; }
+  .card-val { font-size:1.9rem; font-weight:800; color:var(--white); }
+  .card-lbl { font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; }
+  .card-note { font-size:0.78rem; color:var(--muted); margin-top:4px; }
+
+  .stat-card { display:flex; gap:1rem; align-items:flex-start; }
+  .stat-icon { width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+  .si-cyan { background:var(--cyan-dim); }
+  .si-green { background:var(--green-dim); }
+  .si-amber { background:var(--amber-dim); }
+  .si-red { background:var(--red-dim); }
+  .si-purple { background:var(--purple-dim); }
+
+  /* ─── TABLE ─── */
+  .table-wrap { overflow-x:auto; margin-top:1.2rem; }
+  .table { width:100%; border-collapse:collapse; }
+  .table th { text-align:left; padding:0.8rem 1rem; border-bottom:1px solid var(--navy-border); font-size:0.75rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; }
+  .table td { padding:0.8rem 1rem; border-bottom:1px solid var(--navy-border); font-size:0.85rem; color:var(--text); }
+  .table tr:hover td { background:rgba(0,212,255,0.04); }
+
+  /* ─── BADGES ─── */
+  .badge { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:20px; font-size:0.72rem; font-weight:600; white-space:nowrap; }
+  .b-success { background:var(--green-dim); color:var(--green); }
+  .b-warning { background:var(--amber-dim); color:var(--amber); }
+  .b-danger  { background:var(--red-dim); color:var(--red); }
+  .b-info    { background:var(--cyan-dim); color:var(--cyan); }
+  .b-purple  { background:var(--purple-dim); color:var(--purple); }
+
+  /* ─── BUTTONS ─── */
+  .btn { padding:7px 14px; border:none; border-radius:7px; font-size:0.82rem; font-weight:600; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px; transition:all 0.2s; }
+  .btn-primary { background:linear-gradient(135deg,var(--cyan),var(--purple)); color:var(--navy); }
+  .btn-primary:hover { opacity:0.9; transform:translateY(-1px); }
+  .btn-secondary { background:var(--navy-mid); border:1px solid var(--navy-border); color:var(--text); }
+  .btn-secondary:hover { border-color:var(--cyan); color:var(--cyan); }
+  .btn-sm { padding:5px 10px; font-size:0.75rem; }
+  .btn-block { width:100%; justify-content:center; margin-top:1rem; }
+
+  /* ─── ALERTS ─── */
+  .alert { padding:0.9rem 1rem; border-radius:8px; border-left:3px solid; margin-bottom:0.8rem; font-size:0.85rem; }
+  .alert-info    { background:var(--cyan-dim); border-color:var(--cyan); color:var(--cyan); }
+  .alert-success { background:var(--green-dim); border-color:var(--green); color:var(--green); }
+  .alert-warning { background:var(--amber-dim); border-color:var(--amber); color:var(--amber); }
+  .alert-danger  { background:var(--red-dim); border-color:var(--red); color:var(--red); }
+
+  /* ─── PROGRESS BAR ─── */
+  .prog-wrap { margin-bottom:1.2rem; }
+  .prog-head { display:flex; justify-content:space-between; margin-bottom:5px; font-size:0.85rem; }
+  .prog-bar { height:5px; background:var(--navy-mid); border-radius:3px; overflow:hidden; }
+  .prog-fill { height:100%; border-radius:3px; }
+
+  /* ─── ITEM ROW ─── */
+  .item-row {
+    padding:0.9rem 1rem; background:var(--navy-mid); border-radius:8px;
+    border:1px solid var(--navy-border); margin-bottom:0.6rem;
+  }
+  .item-row-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+  .item-row-title { font-weight:600; color:var(--white); font-size:0.9rem; }
+  .item-row-sub { font-size:0.78rem; color:var(--muted); }
+
+  /* ─── CHART PLACEHOLDER ─── */
+  .chart-box {
+    height:180px; background:linear-gradient(135deg,rgba(0,212,255,0.07),rgba(124,92,252,0.07));
+    border-radius:10px; display:flex; align-items:flex-end; padding:1.5rem 1rem 1rem;
+    gap:0.4rem; overflow:hidden;
+  }
+  .bar { border-radius:4px 4px 0 0; background:linear-gradient(180deg,var(--cyan),var(--purple)); opacity:0.6; flex:1; transition:opacity 0.2s; }
+  .bar:hover { opacity:1; }
+
+  /* ─── RESPONSIVE ─── */
+  @media(max-width:1100px) {
+    .grid-4 { grid-template-columns:repeat(2,1fr); }
+    .grid-3 { grid-template-columns:repeat(2,1fr); }
+  }
+  @media(max-width:768px) {
+    .dashboard-container { grid-template-columns:1fr; }
+    .sidebar { transform:translateX(-100%); transition:transform 0.3s; }
+    .sidebar.open { transform:translateX(0); }
+    .main-content { margin-left:0; }
+    .grid-2,.grid-3,.grid-4 { grid-template-columns:1fr; }
+    .top-bar { flex-direction:column; gap:0.8rem; }
+    .search-box { width:100%; }
+  }
+
+  /* ─── SECTION HEADER ─── */
+  .section-hdr { margin-bottom:1.5rem; }
+  .section-hdr h2 { font-size:1.1rem; font-weight:700; color:var(--white); }
+  .section-hdr p { font-size:0.8rem; color:var(--muted); margin-top:2px; }
+
+  .mt1 { margin-top:1rem; }
+  .mt2 { margin-top:1.5rem; }
+  .mt3 { margin-top:2rem; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     LOGIN SCREEN
+═══════════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-brand">
+      <div class="login-logo">⚕</div>
+      <h1>MediChain HMS</h1>
+      <p>Hospital Management System v2.0</p>
+    </div>
+    <div class="login-card">
+      <h2>Sign in to your portal</h2>
+
+      <div class="form-group">
+        <label>Select Your Role</label>
+        <div class="role-cards" id="role-picker">
+          <div class="role-card" data-role="doctor" onclick="selectRole(this)">
+            <div class="role-icon">👨‍⚕️</div>
+            <div class="role-name">Doctor</div>
+          </div>
+          <div class="role-card" data-role="patient" onclick="selectRole(this)">
+            <div class="role-icon">👤</div>
+            <div class="role-name">Patient</div>
+          </div>
+          <div class="role-card" data-role="admin" onclick="selectRole(this)">
+            <div class="role-icon">🏥</div>
+            <div class="role-name">Hospital Admin</div>
+          </div>
+          <div class="role-card" data-role="insurance" onclick="selectRole(this)">
+            <div class="role-icon">🛡️</div>
+            <div class="role-name">Insurance</div>
+          </div>
+          <div class="role-card" data-role="billing" onclick="selectRole(this)" style="grid-column:span 2;">
+            <div class="role-icon">💊</div>
+            <div class="role-name">Billing & Pharmacy</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Username / Employee ID</label>
+        <input type="text" class="form-control" id="username" placeholder="e.g. DR-001 or PT-2024-101">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" class="form-control" id="password" placeholder="••••••••">
+      </div>
+
+      <button class="btn-login" onclick="doLogin()">Sign In →</button>
+      <div class="login-error" id="login-error">Please select a role and enter your credentials.</div>
+
+      <p style="text-align:center;color:var(--muted);font-size:0.75rem;margin-top:1.2rem;">
+        Demo: pick any role · enter any credentials
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     APP SHELL
+═══════════════════════════════════════════════ -->
+<div id="app">
+  <div class="dashboard-container">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+      <a href="#" class="sidebar-brand">
+        <div class="sidebar-logo">⚕</div>
+        <div>
+          <div class="sidebar-title">MediChain</div>
+          <div class="sidebar-subtitle">HMS v2.0</div>
+        </div>
+      </a>
+
+      <div class="sidebar-role-badge" id="srb">
+        <div class="srb-avatar" id="srb-icon">👤</div>
+        <div>
+          <div class="srb-name" id="srb-name">User</div>
+          <div class="srb-role" id="srb-role">Role</div>
+        </div>
+      </div>
+
+      <div class="sidebar-label" id="sidebar-label">Navigation</div>
+      <ul class="sidebar-menu" id="sidebar-menu"></ul>
+
+      <button class="logout-btn" onclick="doLogout()">🚪 Sign Out</button>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-content" id="main-content">
+
+      <!-- TOP BAR -->
+      <div class="top-bar">
+        <div>
+          <div class="top-bar-title" id="tb-title">Dashboard</div>
+          <div class="top-bar-subtitle" id="tb-sub">Welcome back</div>
+        </div>
+        <div class="top-bar-right">
+          <input type="text" class="search-box" id="search-box" placeholder="Search...">
+          <button class="notif-btn">🔔<span class="notif-dot"></span></button>
+          <div style="font-size:0.8rem;color:var(--muted);" id="tb-date"></div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════
+           DOCTOR DASHBOARD
+      ════════════════════════════════ -->
+      <div id="dash-doctor" class="dash-section">
+
+        <!-- Overview Stats -->
+        <div class="grid-4">
+          <div class="card stat-card">
+            <div class="stat-icon si-cyan">👥</div>
+            <div>
+              <div class="card-lbl">Today's Patients</div>
+              <div class="card-val">12</div>
+              <div class="card-note">3 pending review</div>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-icon si-green">✅</div>
+            <div>
+              <div class="card-lbl">Completed Consults</div>
+              <div class="card-val">8</div>
+              <div class="card-note">Avg 28 min each</div>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-icon si-red">⚠️</div>
+            <div>
+              <div class="card-lbl">High Risk Alerts</div>
+              <div class="card-val">2</div>
+              <div class="card-note">Immediate action needed</div>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-icon si-purple">💊</div>
+            <div>
+              <div class="card-lbl">Prescriptions Today</div>
+              <div class="card-val">15</div>
+              <div class="card-note">All AI-validated</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2 mt3">
+          <!-- AI Insights -->
+          <div class="card">
+            <div class="card-title">🤖 AI Diagnosis Insights</div>
+            <div class="card-sub">Real-time treatment recommendations</div>
+            <div class="item-row" style="border-left:3px solid var(--cyan);">
+              <div class="item-row-head">
+                <span class="item-row-title">John Doe (P001) — Hypertension Stage 2</span>
+                <span class="badge b-success">92% confidence</span>
+              </div>
+              <div class="item-row-sub">Recommended: BP monitoring · Lisinopril review</div>
+            </div>
+            <div class="item-row" style="border-left:3px solid var(--amber);">
+              <div class="item-row-head">
+                <span class="item-row-title">Sarah Johnson (P003) — Drug Interaction</span>
+                <span class="badge b-warning">Review needed</span>
+              </div>
+              <div class="item-row-sub">⚠ Warfarin ↔ Aspirin conflict detected</div>
+            </div>
+            <div class="item-row" style="border-left:3px solid var(--red);">
+              <div class="item-row-head">
+                <span class="item-row-title">Amit Sharma (P007) — Arrhythmia Risk</span>
+                <span class="badge b-danger">High Risk</span>
+              </div>
+              <div class="item-row-sub">ECG anomaly detected · Cardiologist escalation advised</div>
+            </div>
+            <button class="btn btn-primary btn-block">View All AI Insights</button>
+          </div>
+
+          <!-- Patient Queue -->
+          <div class="card">
+            <div class="card-title">📋 Today's Queue</div>
+            <div class="card-sub">Prioritised by AI risk score</div>
+            <div class="item-row">
+              <div class="item-row-head">
+                <span class="item-row-title">John Doe (P001)</span>
+                <span class="badge b-danger">HIGH RISK</span>
+              </div>
+              <div class="item-row-sub">10:15 AM · Chest Pain · Room 3</div>
+            </div>
+            <div class="item-row">
+              <div class="item-row-head">
+                <span class="item-row-title">Sarah Johnson (P003)</span>
+                <span class="badge b-warning">MEDIUM</span>
+              </div>
+              <div class="item-row-sub">10:45 AM · Follow-up · Room 5</div>
+            </div>
+            <div class="item-row">
+              <div class="item-row-head">
+                <span class="item-row-title">Mike Wilson (P002)</span>
+                <span class="badge b-success">LOW RISK</span>
+              </div>
+              <div class="item-row-sub">11:00 AM · Regular Check-up · Room 2</div>
+            </div>
+            <div class="item-row">
+              <div class="item-row-head">
+                <span class="item-row-title">Priya Mehta (P011)</span>
+                <span class="badge b-info">SCHEDULED</span>
+              </div>
+              <div class="item-row-sub">11:30 AM · Diabetes Review · Room 5</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Treatment Plans -->
+        <div class="card mt3">
+          <div class="card-title">💊 Active Treatment Plans</div>
+          <div class="card-sub">AI-validated prescriptions</div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Patient</th><th>Condition</th><th>Medication</th><th>AI Status</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td>John Doe</td><td>Hypertension</td><td>Lisinopril 10mg</td><td><span class="badge b-success">✓ Validated</span></td><td><button class="btn btn-sm btn-secondary">View</button></td></tr>
+                <tr><td>Sarah Johnson</td><td>Arrhythmia</td><td>Metoprolol 50mg</td><td><span class="badge b-warning">⚠ Review</span></td><td><button class="btn btn-sm btn-primary">Review</button></td></tr>
+                <tr><td>Mike Wilson</td><td>Diabetes Type 2</td><td>Metformin 500mg</td><td><span class="badge b-success">✓ Validated</span></td><td><button class="btn btn-sm btn-secondary">View</button></td></tr>
+                <tr><td>Priya Mehta</td><td>Thyroid</td><td>Levothyroxine 50mcg</td><td><span class="badge b-info">Pending Lab</span></td><td><button class="btn btn-sm btn-secondary">Hold</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Performance -->
+        <div class="grid-2 mt3">
+          <div class="card">
+            <div class="card-title">📊 Weekly Patient Volume</div>
+            <div class="card-sub">Mon–Sat consultations</div>
+            <div class="chart-box mt1">
+              <div class="bar" style="height:40%"></div>
+              <div class="bar" style="height:65%"></div>
+              <div class="bar" style="height:55%"></div>
+              <div class="bar" style="height:80%"></div>
+              <div class="bar" style="height:70%"></div>
+              <div class="bar" style="height:85%"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">📈 AI Model Accuracy</div>
+            <div class="card-sub">Diagnosis validation rates</div>
+            <div style="margin-top:1.2rem;">
+              <div class="prog-wrap">
+                <div class="prog-head"><span>Diagnostic Accuracy</span><span style="color:var(--cyan)">92%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:92%;background:linear-gradient(90deg,var(--cyan),var(--purple))"></div></div>
+              </div>
+              <div class="prog-wrap">
+                <div class="prog-head"><span>Drug Interaction Detection</span><span style="color:var(--green)">98%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:98%;background:linear-gradient(90deg,var(--green),var(--cyan))"></div></div>
+              </div>
+              <div class="prog-wrap">
+                <div class="prog-head"><span>Treatment Success Rate</span><span style="color:var(--amber)">84%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:84%;background:linear-gradient(90deg,var(--amber),var(--green))"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ════════════════════════════════
+           PATIENT PORTAL
+      ════════════════════════════════ -->
+      <div id="dash-patient" class="dash-section">
+
+        <!-- Health Summary -->
+        <div class="grid-4">
+          <div class="card stat-card">
+            <div class="stat-icon si-cyan">❤️</div>
+            <div>
+              <div class="card-lbl">Heart Rate</div>
+              <div class="card-val">78</div>
+              <div class="card-note">bpm · Normal</div>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-icon si-green">🩺</div>
+            <div>
+              <div class="card-lbl">Blood Pressure</div>
+              <div class="card-val">118/76</div>
+              <div class="card-note">Optimal range</div>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-icon si-amber">📅</div>
+            <div>
+              <div class="card-lbl">Next Appointment</div>
+              <div class="card-val" style="font-size:1.2rem;margin-top:4px;">Jun 24</div>
+              <div class="card-note">Dr. Rajesh Kumar</div>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-icon si-purple">💊</div>
+            <div>
+              <div class="card-lbl">Active Medications</div>
+              <div class="card-val">3</div>
+              <div class="card-note">All on schedule</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2 mt3">
+          <!-- Health Vitals Trend -->
+          <div class="card">
+            <div class="card-title">📈 Vitals This Month</div>
+            <div class="card-sub">Blood pressure & heart rate trend</div>
+            <div class="chart-box mt1">
+              <div class="bar" style="height:55%"></div>
+              <div class="bar" style="height:60%"></div>
+              <div class="bar" style="height:50%"></div>
+              <div class="bar" style="height:65%"></div>
+              <div class="bar" style="height:58%"></div>
+              <div class="bar" style="height:62%"></div>
+            </div>
+            <div style="display:flex;gap:1.5rem;margin-top:1rem;font-size:0.8rem;">
+              <div style="text-align:center"><div style="color:var(--cyan);font-weight:600;">↑ 5%</div><div style="color:var(--muted)">Improvement</div></div>
+              <div style="text-align:center"><div style="color:var(--green);font-weight:600;">✓ On Track</div><div style="color:var(--muted)">Health Goals</div></div>
+            </div>
+          </div>
+
+          <!-- Upcoming Appointments -->
+          <div class="card">
+            <div class="card-title">📅 Upcoming Appointments</div>
+            <div class="card-sub">Scheduled visits</div>
+            <div class="item-row mt1">
+              <div class="item-row-head">
+                <span class="item-row-title">Dr. Rajesh Kumar — Cardiology</span>
+                <span class="badge b-success">Confirmed</span>
+              </div>
+              <div class="item-row-sub">June 24 · 10:30 AM · OPD Block B</div>
+            </div>
+            <div class="item-row">
+              <div class="item-row-head">
+                <span class="item-row-title">Lab Work — Blood Tests</span>
+                <span class="badge b-info">Scheduled</span>
+              </div>
+              <div class="item-row-sub">June 25 · 2:00 PM · Pathology Lab</div>
+            </div>
+            <div class="item-row">
+              <div class="item-row-head">
+                <span class="item-row-title">ECG Follow-up</span>
+                <span class="badge b-warning">Pending confirm</span>
+              </div>
+              <div class="item-row-sub">June 28 · Time TBD</div>
+            </div>
+            <button class="btn btn-primary btn-block">Book New Appointment</button>
+          </div>
+        </div>
+
+        <!-- Current Medications -->
+        <div class="card mt3">
+          <div class="card-title">💊 Current Medications</div>
+          <div class="card-sub">Active prescriptions with dosage schedule</div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Medication</th><th>Dosage</th><th>Frequency</th><th>Refills Left</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Lisinopril</td><td>10 mg</td><td>Once daily (morning)</td><td>2 remaining</td><td><span class="badge b-success">Active</span></td></tr>
+                <tr><td>Atorvastatin</td><td>20 mg</td><td>Once daily (night)</td><td>1 remaining</td><td><span class="badge b-info">Active</span></td></tr>
+                <tr><td>Aspirin</td><td>100 mg</td><td>Once daily (morning)</td><td>3 remaining</td><td><span class="badge b-success">Active</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid-2 mt3">
+          <!-- Medical Records -->
+          <div class="card">
+            <div class="card-title">📄 Medical Records</div>
+            <div class="card-sub">Your health documents</div>
+            <div class="item-row mt1">
+              <div class="item-row-head">
+                <span class="item-row-title">📋 Lab Report — June 15</span>
+                <button class="btn btn-sm btn-secondary">Download</button>
+              </div>
+              <div class="item-row-sub">Blood Test Results · PDF</div>
+            </div>
+            <div class="item-row">
+              <div class="item-row-head">
+                <span class="item-row-title">📊 Prescription History</span>
+                <button class="btn btn-sm btn-secondary">View</button>
+              </div>
+              <div class="item-row-sub">All past medications</div>
+            </div>
+            <div class="item-row">
+              <div class="item-row-head">
+                <span class="item-row-title">🫀 ECG Report — June 1</span>
+                <button class="btn btn-sm btn-secondary">Download</button>
+              </div>
+              <div class="item-row-sub">Cardiology · PDF</div>
+            </div>
+          </div>
+
+          <!-- Health Goals -->
+          <div class="card">
+            <div class="card-title">🎯 Health Goals</div>
+            <div class="card-sub">Your wellness progress</div>
+            <div style="margin-top:1.2rem;">
+              <div class="prog-wrap">
+                <div class="prog-head"><span>Weight Loss Goal</span><span style="color:var(--green)">68%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:68%;background:linear-gradient(90deg,var(--green),var(--cyan))"></div></div>
+              </div>
+              <div class="prog-wrap">
+                <div class="prog-head"><span>Exercise Routine</span><span style="color:var(--cyan)">45%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:45%;background:linear-gradient(90deg,var(--cyan),var(--purple))"></div></div>
+              </div>
+              <div class="prog-wrap">
+                <div class="prog-head"><span>Sleep Schedule</span><span style="color:var(--amber)">82%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:82%;background:linear-gradient(90deg,var(--amber),var(--green))"></div></div>
+              </div>
+              <div class="prog-wrap">
+                <div class="prog-head"><span>Medication Adherence</span><span style="color:var(--purple)">95%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:95%;background:linear-gradient(90deg,var(--purple),var(--cyan))"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ════════════════════════════════
+           HOSPITAL ADMIN DASHBOARD
+      ════════════════════════════════ -->
+      <div id="dash-admin" class="dash-section">
+
+        <!-- KPI Row -->
+        <div class="grid-4">
+          <div class="card stat-card">
+            <div class="stat-icon si-cyan">🏥</div>
+            <div>
+              <div class="card-lbl">Total Patients Today</div>
+              <div class="card-val">284</div>
+              <div class="card-note">↑ 12% vs yesterday</div>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-icon si-green">🛏️</div>
+            <div>
+              <div class="card-lbl">Bed Occupancy</div>
+              <div class="card-val">78%</div>
+              <div class="card-note">312 / 400 occupied</div>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-icon si-amber">👨‍⚕️</div>
+            <div>
+              <div class="card-lbl">Staff On Duty</div>
+              <div class="card-val">142</div>
+              <div class="card-note">8 on leave today</div>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-icon si-red">⚡</div>
+            <div>
+              <div class="card-lbl">Emergency Cases</div>
+              <div class="card-val">7</div>
+              <div class="card-note">2 in critical care</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alerts -->
+        <div class="mt2">
+          <div class="alert alert-danger">🔴 <strong>Critical:</strong> ICU at 95% capacity — 2 beds remaining. Overflow protocol may be needed.</div>
+          <div class="alert alert-warning">⚠️ <strong>Staffing:</strong> Night shift short by 3 nurses in Ward B. Please reassign from Ward D.</div>
+          <div class="alert alert-info">ℹ️ <strong>Audit:</strong> Monthly compliance report due by June 30. 4 departments pending sign-off.</div>
+        </div>
+
+        <div class="grid-2 mt3">
+          <!-- Department Occupancy -->
+          <div class="card">
+            <div class="card-title">🏢 Department Occupancy</div>
+            <div class="card-sub">Real-time ward utilisation</div>
+            <div style="margin-top:1.2rem;">
+              <div class="prog-wrap">
+                <div class="prog-head"><span>ICU</span><span style="color:var(--red)">95%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:95%;background:linear-gradient(90deg,var(--red),var(--amber))"></div></div>
+              </div>
+              <div class="prog-wrap">
+                <div class="prog-head"><span>Cardiology</span><span style="color:var(--amber)">82%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:82%;background:linear-gradient(90deg,var(--amber),var(--green))"></div></div>
+              </div>
+              <div class="prog-wrap">
+                <div class="prog-head"><span>Orthopaedics</span><span style="color:var(--cyan)">67%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:67%;background:linear-gradient(90deg,var(--cyan),var(--purple))"></div></div>
+              </div>
+              <div class="prog-wrap">
+                <div class="prog-head"><span>Paediatrics</span><span style="color:var(--green)">54%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:54%;background:linear-gradient(90deg,var(--green),var(--cyan))"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Revenue Overview -->
+          <div class="card">
+            <div class="card-title">💰 Revenue Overview</div>
+            <div class="card-sub">Monthly financial snapshot</div>
+            <div class="chart-box mt1">
+              <div class="bar" style="height:70%"></div>
+              <div class="bar" style="height:55%"></div>
+              <div class="bar" style="height:80%"></div>
+              <div class="bar" style="height:60%"></div>
+              <div class="bar" style="height:75%"></div>
+              <div class="bar" style="height:90%"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem;text-align:center;">
+              <div>
+                <div style="font-size:0.75rem;color:var(--muted)">TOTAL REVENUE</div>
+                <div style="font-size:1.3rem;font-weight:700;color:var(--green)">₹36.5M</div>
+              </div>
+              <div>
+                <div style="font-size:0.75rem;color:var(--muted)">TOTAL EXPENSES</div>
+                <div style="font-size:1.3rem;font-weight:700;color:var(--amber)">₹22.1M</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Staff Management -->
+        <div class="card mt3">
+          <div class="card-title">👩‍⚕️ Staff Overview</div>
+          <div class="card-sub">Current duty rosters and performance</div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Name</th><th>Role</th><th>Department</th><th>Shift</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td>Dr. Rajesh Kumar</td><td>Cardiologist</td><td>Cardiology</td><td>Morning</td><td><span class="badge b-success">On Duty</span></td><td><button class="btn btn-sm btn-secondary">View</button></td></tr>
+                <tr><td>Nurse Anita Singh</td><td>Sr. Nurse</td><td>ICU</td><td>Night</td><td><span class="badge b-success">On Duty</span></td><td><button class="btn btn-sm btn-secondary">View</button></td></tr>
+                <tr><td>Dr. Meera Nair</td><td>Paediatrician</td><td>Paediatrics</td><td>Morning</td><td><span class="badge b-warning">On Leave</span></td><td><button class="btn btn-sm btn-primary">Reassign</button></td></tr>
+                <tr><td>Lab Tech Ravi Pal</td><td>Lab Technician</td><td>Pathology</td><td>Afternoon</td><td><span class="badge b-info">Scheduled</span></td><td><button class="btn btn-sm btn-secondary">View</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Compliance & Ops -->
+        <div class="grid-3 mt3">
+          <div class="card">
+            <div class="card-title">📋 Compliance Status</div>
+            <div class="card-sub">Regulatory & accreditation checks</div>
+            <div class="item-row mt1"><div class="item-row-head"><span class="item-row-title">NABH Accreditation</span><span class="badge b-success">Valid</span></div><div class="item-row-sub">Expires Dec 2026</div></div>
+            <div class="item-row"><div class="item-row-head"><span class="item-row-title">Fire Safety Audit</span><span class="badge b-warning">Due soon</span></div><div class="item-row-sub">July 10, 2026</div></div>
+            <div class="item-row"><div class="item-row-head"><span class="item-row-title">Monthly Report</span><span class="badge b-danger">Pending</span></div><div class="item-row-sub">4 departments pending</div></div>
+          </div>
+          <div class="card">
+            <div class="card-title">🔧 Maintenance Requests</div>
+            <div class="card-sub">Facility & equipment issues</div>
+            <div class="item-row mt1"><div class="item-row-head"><span class="item-row-title">MRI Machine — Ward C</span><span class="badge b-danger">Critical</span></div><div class="item-row-sub">Calibration required today</div></div>
+            <div class="item-row"><div class="item-row-head"><span class="item-row-title">AC Unit — Room 204</span><span class="badge b-warning">Medium</span></div><div class="item-row-sub">Reported June 22</div></div>
+            <div class="item-row"><div class="item-row-head"><span class="item-row-title">Generator Test</span><span class="badge b-success">Scheduled</span></div><div class="item-row-sub">June 25, 11 AM</div></div>
+          </div>
+          <div class="card">
+            <div class="card-title">📊 Key Metrics</div>
+            <div class="card-sub">This month at a glance</div>
+            <div style="display:flex;flex-direction:column;gap:0.8rem;margin-top:1rem;">
+              <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);font-size:0.85rem">Patient Satisfaction</span><span style="font-weight:700;color:var(--green)">4.6 / 5</span></div>
+              <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);font-size:0.85rem">Avg Wait Time</span><span style="font-weight:700;color:var(--cyan)">18 min</span></div>
+              <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);font-size:0.85rem">Readmission Rate</span><span style="font-weight:700;color:var(--amber)">3.2%</span></div>
+              <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);font-size:0.85rem">Mortality Rate</span><span style="font-weight:700;color:var(--green)">0.8%</span></div>
+              <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);font-size:0.85rem">Net Profit Margin</span><span style="font-weight:700;color:var(--cyan)">39.4%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ════════════════════════════════
+           INSURANCE CLAIMS DASHBOARD
+      ════════════════════════════════ -->
+      <div id="dash-insurance" class="dash-section">
+
+        <!-- Stats -->
+        <div class="grid-4">
+          <div class="card stat-card">
+            <div class="stat-icon si-cyan">📝</div>
+            <div>
+              <div class="card-lbl">Claims This Month</div>
+              <div class="card-val">147</div>
+              <div class="card-note">↑ 18% vs last month</div>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-icon si-green">✅</div>
+            <div>
+              <div class="card-lbl">Approved Claims</div>
+              <div class="card-val">98</div>
+              <div class="card-note">₹8.4M total value</div>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-icon si-amber">⏳</div>
+            <div>
+              <div class="card-lbl">Under Review</div>
+              <div class="card-val">31</div>
+              <div class="card-note">Avg 3.2 days pending</div>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-icon si-red">❌</div>
+            <div>
+              <div class="card-lbl">Rejected Claims</div>
+              <div class="card-val">18</div>
+              <div class="card-note">12.2% rejection rate</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt2">
+          <div class="alert alert-warning">⚠️ <strong>Fraud Alert:</strong> AI flagged Claim CLM-2026-0892 for unusual billing pattern. Manual review required.</div>
+          <div class="alert alert-info">ℹ️ <strong>Pre-auth:</strong> 5 pre-authorisation requests awaiting insurer response (TPA: Star Health, HDFC ERGO).</div>
+        </div>
+
+        <!-- Claims Table -->
+        <div class="card mt3">
+          <div class="card-title">📋 Recent Claims</div>
+          <div class="card-sub">AI-processed with fraud detection scores</div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Claim ID</th><th>Patient</th><th>Amount</th><th>Insurer</th><th>AI Fraud Score</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td>CLM-2026-0897</td><td>John Doe</td><td>₹45,000</td><td>Star Health</td><td><span class="badge b-success">Low (2%)</span></td><td><span class="badge b-success">Approved</span></td><td><button class="btn btn-sm btn-secondary">View</button></td></tr>
+                <tr><td>CLM-2026-0895</td><td>Sarah Johnson</td><td>₹1,20,000</td><td>HDFC ERGO</td><td><span class="badge b-warning">Medium (28%)</span></td><td><span class="badge b-warning">Under Review</span></td><td><button class="btn btn-sm btn-primary">Review</button></td></tr>
+                <tr><td>CLM-2026-0892</td><td>Ramesh Gupta</td><td>₹3,50,000</td><td>LIC Health</td><td><span class="badge b-danger">High (78%)</span></td><td><span class="badge b-danger">Flagged</span></td><td><button class="btn btn-sm btn-primary">Investigate</button></td></tr>
+                <tr><td>CLM-2026-0889</td><td>Priya Mehta</td><td>₹22,500</td><td>Bajaj Allianz</td><td><span class="badge b-success">Low (5%)</span></td><td><span class="badge b-success">Approved</span></td><td><button class="btn btn-sm btn-secondary">View</button></td></tr>
+                <tr><td>CLM-2026-0885</td><td>Anil Sharma</td><td>₹68,000</td><td>New India Assurance</td><td><span class="badge b-info">Pending</span></td><td><span class="badge b-info">Pre-auth</span></td><td><button class="btn btn-sm btn-secondary">Chase</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid-2 mt3">
+          <!-- Payer Breakdown -->
+          <div class="card">
+            <div class="card-title">🏦 Payer Breakdown</div>
+            <div class="card-sub">Claims by insurance provider</div>
+            <div style="margin-top:1.2rem;">
+              <div class="prog-wrap">
+                <div class="prog-head"><span>Star Health</span><span style="color:var(--cyan)">38%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:38%;background:linear-gradient(90deg,var(--cyan),var(--purple))"></div></div>
+              </div>
+              <div class="prog-wrap">
+                <div class="prog-head"><span>HDFC ERGO</span><span style="color:var(--green)">24%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:24%;background:linear-gradient(90deg,var(--green),var(--cyan))"></div></div>
+              </div>
+              <div class="prog-wrap">
+                <div class="prog-head"><span>Bajaj Allianz</span><span style="color:var(--amber)">18%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:18%;background:linear-gradient(90deg,var(--amber),var(--green))"></div></div>
+              </div>
+              <div class="prog-wrap">
+                <div class="prog-head"><span>Others</span><span style="color:var(--muted)">20%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:20%;background:linear-gradient(90deg,var(--muted),var(--navy-border))"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Fraud Detection -->
+          <div class="card">
+            <div class="card-title">🤖 AI Fraud Detection</div>
+            <div class="card-sub">Monthly anomaly report</div>
+            <div style="margin-top:1.2rem;display:flex;flex-direction:column;gap:0.8rem;">
+              <div style="display:flex;justify-content:space-between;padding:0.8rem;background:var(--red-dim);border-radius:8px;border-left:3px solid var(--red);">
+                <span style="font-weight:600;color:var(--white)">High-Risk Flags</span>
+                <span style="font-weight:700;color:var(--red)">6 claims</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:0.8rem;background:var(--amber-dim);border-radius:8px;border-left:3px solid var(--amber);">
+                <span style="font-weight:600;color:var(--white)">Medium Anomalies</span>
+                <span style="font-weight:700;color:var(--amber)">14 claims</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:0.8rem;background:var(--green-dim);border-radius:8px;border-left:3px solid var(--green);">
+                <span style="font-weight:600;color:var(--white)">Clean Submissions</span>
+                <span style="font-weight:700;color:var(--green)">127 claims</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:0.8rem;background:var(--cyan-dim);border-radius:8px;border-left:3px solid var(--cyan);">
+                <span style="font-weight:600;color:var(--white)">Estimated Fraud Saved</span>
+                <span style="font-weight:700;color:var(--cyan)">₹4.2M</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ════════════════════════════════
+           BILLING & PHARMACY DASHBOARD
+      ════════════════════════════════ -->
+      <div id="dash-billing" class="dash-section">
+
+        <!-- Stats -->
+        <div class="grid-4">
+          <div class="card stat-card">
+            <div class="stat-icon si-cyan">📦</div>
+            <div>
+              <div class="card-lbl">Total Medicines</div>
+              <div class="card-val">1,842</div>
+              <div class="card-note">12 items low stock</div>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-icon si-green">💰</div>
+            <div>
+              <div class="card-lbl">Today's Pharmacy Sales</div>
+              <div class="card-val">₹1.2M</div>
+              <div class="card-note">↑ 8% growth</div>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-icon si-amber">⚠️</div>
+            <div>
+              <div class="card-lbl">Expiring Soon</div>
+              <div class="card-val">8</div>
+              <div class="card-note">Within 30 days</div>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-icon si-purple">📊</div>
+            <div>
+              <div class="card-lbl">Avg Billing Time</div>
+              <div class="card-val">3.2</div>
+              <div class="card-note">min per invoice</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt2">
+          <div class="alert alert-danger">🔴 <strong>Critical:</strong> INV-2026-5847 expired. Auto follow-up initiated.</div>
+          <div class="alert alert-warning">⚠️ <strong>Approval:</strong> 5 invoices pending admin sign-off.</div>
+          <div class="alert alert-info">ℹ️ <strong>AI Tip:</strong> Generic substitution could save ₹85K this month.</div>
+        </div>
+
+        <div class="grid-2 mt3">
+          <!-- Medicine Inventory -->
+          <div class="card">
+            <div class="card-title">📦 Medicine Inventory</div>
+            <div class="card-sub">Current stock with AI reorder predictions</div>
+            <div class="table-wrap">
+              <table class="table">
+                <thead><tr><th>Medicine</th><th>In Stock</th><th>Status</th><th>Reorder</th></tr></thead>
+                <tbody>
+                  <tr><td>Paracetamol 500mg</td><td>850 units</td><td><span class="badge b-success">✓ Optimal</span></td><td style="color:var(--green);font-size:0.8rem">50 days</td></tr>
+                  <tr><td>Amoxicillin 250mg</td><td>120 units</td><td><span class="badge b-warning">⚠ Low Stock</span></td><td style="color:var(--amber);font-size:0.8rem">Urgent</td></tr>
+                  <tr><td>Omeprazole 20mg</td><td>450 units</td><td><span class="badge b-success">✓ Optimal</span></td><td style="color:var(--green);font-size:0.8rem">35 days</td></tr>
+                  <tr><td>Metformin 500mg</td><td>45 units</td><td><span class="badge b-danger">🔴 Critical</span></td><td style="color:var(--red);font-size:0.8rem">3 days!</td></tr>
+                  <tr><td>Atorvastatin 20mg</td><td>320 units</td><td><span class="badge b-success">✓ Optimal</span></td><td style="color:var(--green);font-size:0.8rem">28 days</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Billing Alerts -->
+          <div class="card">
+            <div class="card-title">💳 Patient Billing Records</div>
+            <div class="card-sub">Today's invoices and payment status</div>
+            <div class="table-wrap">
+              <table class="table">
+                <thead><tr><th>Invoice</th><th>Patient</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody>
+                  <tr><td>INV-5850</td><td>John Doe</td><td>₹45,000</td><td><span class="badge b-success">Paid</span></td><td><button class="btn btn-sm btn-secondary">View</button></td></tr>
+                  <tr><td>INV-5849</td><td>Sarah Johnson</td><td>₹28,500</td><td><span class="badge b-info">Pending</span></td><td><button class="btn btn-sm btn-primary">Remind</button></td></tr>
+                  <tr><td>INV-5848</td><td>Mike Wilson</td><td>₹62,000</td><td><span class="badge b-warning">Partial</span></td><td><button class="btn btn-sm btn-secondary">View</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cost Optimisation -->
+        <div class="grid-2 mt3">
+          <div class="card">
+            <div class="card-title">💡 AI Cost Optimisation</div>
+            <div class="card-sub">Savings recommendations</div>
+            <div style="margin-top:1.2rem;display:flex;flex-direction:column;gap:0.8rem;">
+              <div style="padding:1rem;background:rgba(0,229,160,0.08);border-radius:10px;border-left:3px solid var(--green)">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-weight:600;color:var(--white)">Generic Substitution</span><span style="color:var(--green);font-weight:600">Save ₹42K/mo</span></div>
+                <div style="font-size:0.78rem;color:var(--muted)">Replace branded drugs with approved generics</div>
+              </div>
+              <div style="padding:1rem;background:rgba(0,212,255,0.08);border-radius:10px;border-left:3px solid var(--cyan)">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-weight:600;color:var(--white)">Bulk Ordering</span><span style="color:var(--cyan);font-weight:600">Save ₹28K/mo</span></div>
+                <div style="font-size:0.78rem;color:var(--muted)">Consolidate suppliers for better rates</div>
+              </div>
+              <div style="padding:1rem;background:rgba(255,181,71,0.08);border-radius:10px;border-left:3px solid var(--amber)">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-weight:600;color:var(--white)">Reduce Waste</span><span style="color:var(--amber);font-weight:600">Save ₹15K/mo</span></div>
+                <div style="font-size:0.78rem;color:var(--muted)">Minimise expiry losses via better forecasting</div>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-block">View All Recommendations</button>
+          </div>
+          <div class="card">
+            <div class="card-title">📊 Monthly Financial Summary</div>
+            <div class="card-sub">Revenue, costs, and profit</div>
+            <div class="chart-box mt1">
+              <div class="bar" style="height:75%"></div>
+              <div class="bar" style="height:60%"></div>
+              <div class="bar" style="height:80%"></div>
+              <div class="bar" style="height:55%"></div>
+              <div class="bar" style="height:85%"></div>
+              <div class="bar" style="height:70%"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem;text-align:center;">
+              <div><div style="font-size:0.75rem;color:var(--muted)">TOTAL REVENUE</div><div style="font-size:1.3rem;font-weight:700;color:var(--green)">₹36.5M</div></div>
+              <div><div style="font-size:0.75rem;color:var(--muted)">TOTAL EXPENSES</div><div style="font-size:1.3rem;font-weight:700;color:var(--amber)">₹22.1M</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /main-content -->
+  </div><!-- /dashboard-container -->
+</div><!-- /app -->
+
+<script>
+// ─── ROLE CONFIGURATION ───────────────────────────────────────────
+const ROLES = {
+  doctor: {
+    name: 'Dr. Rajesh Kumar',
+    role: 'Cardiologist',
+    icon: '👨‍⚕️',
+    title: '👨‍⚕️ Doctor Dashboard',
+    subtitle: 'AI-Powered Treatment Assistance',
+    search: 'Search patients, conditions...',
+    dashId: 'dash-doctor',
+    sidebarLabel: 'Clinical Tools',
+    menu: [
+      { icon:'🏠', label:'Overview', dash:'dash-doctor' },
+      { icon:'👥', label:'My Patients', dash:'dash-doctor' },
+      { icon:'💊', label:'Prescriptions', dash:'dash-doctor' },
+      { icon:'🤖', label:'AI Insights', dash:'dash-doctor' },
+      { icon:'📊', label:'Performance', dash:'dash-doctor' },
+    ]
+  },
+  patient: {
+    name: 'Rahul Sharma',
+    role: 'Patient · ID: PT-2024-101',
+    icon: '👤',
+    title: '👤 Patient Portal',
+    subtitle: 'Your personal health hub',
+    search: 'Search records, medications...',
+    dashId: 'dash-patient',
+    sidebarLabel: 'My Health',
+    menu: [
+      { icon:'🏠', label:'Health Overview', dash:'dash-patient' },
+      { icon:'📅', label:'Appointments', dash:'dash-patient' },
+      { icon:'💊', label:'Medications', dash:'dash-patient' },
+      { icon:'📄', label:'Medical Records', dash:'dash-patient' },
+      { icon:'🎯', label:'Health Goals', dash:'dash-patient' },
+    ]
+  },
+  admin: {
+    name: 'Sunita Kapoor',
+    role: 'Hospital Administrator',
+    icon: '🏥',
+    title: '🏥 Hospital Admin',
+    subtitle: 'Operations & Management Centre',
+    search: 'Search staff, wards, reports...',
+    dashId: 'dash-admin',
+    sidebarLabel: 'Administration',
+    menu: [
+      { icon:'🏠', label:'Operations Overview', dash:'dash-admin' },
+      { icon:'🛏️', label:'Bed Management', dash:'dash-admin' },
+      { icon:'👩‍⚕️', label:'Staff Management', dash:'dash-admin' },
+      { icon:'📋', label:'Compliance', dash:'dash-admin' },
+      { icon:'💰', label:'Financials', dash:'dash-admin' },
+    ]
+  },
+  insurance: {
+    name: 'Vikram Patel',
+    role: 'Insurance Claims Officer',
+    icon: '🛡️',
+    title: '🛡️ Insurance Claims',
+    subtitle: 'AI-assisted claims processing',
+    search: 'Search claims, patients...',
+    dashId: 'dash-insurance',
+    sidebarLabel: 'Claims Management',
+    menu: [
+      { icon:'🏠', label:'Claims Overview', dash:'dash-insurance' },
+      { icon:'📝', label:'Active Claims', dash:'dash-insurance' },
+      { icon:'⏳', label:'Pre-Authorisations', dash:'dash-insurance' },
+      { icon:'🤖', label:'Fraud Detection', dash:'dash-insurance' },
+      { icon:'📊', label:'Analytics', dash:'dash-insurance' },
+    ]
+  },
+  billing: {
+    name: 'Deepa Nair',
+    role: 'Billing & Pharmacy Manager',
+    icon: '💊',
+    title: '💊 Billing & Pharmacy',
+    subtitle: 'Inventory, invoicing & cost control',
+    search: 'Search medicines, invoices...',
+    dashId: 'dash-billing',
+    sidebarLabel: 'Billing & Inventory',
+    menu: [
+      { icon:'🏠', label:'Overview', dash:'dash-billing' },
+      { icon:'📦', label:'Inventory', dash:'dash-billing' },
+      { icon:'💳', label:'Patient Billing', dash:'dash-billing' },
+      { icon:'💡', label:'Cost Optimisation', dash:'dash-billing' },
+      { icon:'📊', label:'Reports', dash:'dash-billing' },
+    ]
+  }
+};
+
+// ─── STATE ────────────────────────────────────────────────────────
+let selectedRole = null;
+let activeDash = null;
+
+function selectRole(el) {
+  document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedRole = el.dataset.role;
+}
+
+function doLogin() {
+  const user = document.getElementById('username').value.trim();
+  const pass = document.getElementById('password').value.trim();
+  const err  = document.getElementById('login-error');
+
+  if (!selectedRole || !user || !pass) {
+    err.style.display = 'block';
+    err.textContent = 'Please select a role and fill in all fields.';
+    return;
+  }
+
+  err.style.display = 'none';
+  launchDashboard(selectedRole);
+}
+
+function launchDashboard(role) {
+  const cfg = ROLES[role];
+  if (!cfg) return;
+
+  // Hide login, show app
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+
+  // Set sidebar profile
+  document.getElementById('srb-icon').textContent = cfg.icon;
+  document.getElementById('srb-name').textContent = cfg.name;
+  document.getElementById('srb-role').textContent = cfg.role;
+  document.getElementById('sidebar-label').textContent = cfg.sidebarLabel;
+
+  // Build menu
+  const menu = document.getElementById('sidebar-menu');
+  menu.innerHTML = '';
+  cfg.menu.forEach((item, i) => {
+    const li = document.createElement('li');
+    const a  = document.createElement('a');
+    a.href = '#';
+    a.innerHTML = `<span>${item.icon}</span> ${item.label}`;
+    if (i === 0) a.classList.add('active');
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      showDash(item.dash);
+      menu.querySelectorAll('a').forEach(x => x.classList.remove('active'));
+      a.classList.add('active');
+    });
+    li.appendChild(a);
+    menu.appendChild(li);
+  });
+
+  // Top bar
+  document.getElementById('tb-title').textContent = cfg.title;
+  document.getElementById('tb-sub').textContent  = cfg.subtitle;
+  document.getElementById('search-box').placeholder = cfg.search;
+
+  // Date
+  document.getElementById('tb-date').textContent = new Date().toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+
+  // Show dashboard section
+  showDash(cfg.dashId);
+  activeDash = cfg.dashId;
+}
+
+function showDash(id) {
+  document.querySelectorAll('.dash-section').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+}
+
+function doLogout() {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('username').value = '';
+  document.getElementById('password').value = '';
+  document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+  selectedRole = null;
+}
+
+// Enter key on login
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') {
+    doLogin();
+  }
+});
+</script>
+</body>
+</html>

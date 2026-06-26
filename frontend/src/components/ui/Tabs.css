@@ -1,0 +1,29 @@
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--navy-border);
+  margin-bottom: 0.8rem;
+}
+
+.tab {
+  padding: 7px 14px;
+  font-size: 0.73rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--muted);
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.tab.active {
+  color: var(--cyan);
+  border-bottom-color: var(--cyan);
+}
+
+.tab:hover:not(.active) {
+  color: var(--white);
+}

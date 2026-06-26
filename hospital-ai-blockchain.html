@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediChain HMS — AI + Blockchain Hospital Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0A0F2E;
+    --navy-mid: #111936;
+    --navy-card: #141B3C;
+    --navy-border: #1E2A50;
+    --cyan: #00D4FF;
+    --cyan-dim: rgba(0,212,255,0.12);
+    --cyan-glow: rgba(0,212,255,0.35);
+    --green: #00E5A0;
+    --green-dim: rgba(0,229,160,0.12);
+    --amber: #FFB547;
+    --amber-dim: rgba(255,181,71,0.12);
+    --red: #FF4B6E;
+    --red-dim: rgba(255,75,110,0.12);
+    --purple: #7C5CFC;
+    --purple-dim: rgba(124,92,252,0.12);
+    --white: #F0F8FF;
+    --muted: #6B7DB3;
+    --text: #C8D8F0;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--navy);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--navy); }
+  ::-webkit-scrollbar-thumb { background: var(--navy-border); border-radius:3px; }
+
+  /* ── TOP NAV ── */
+  nav {
+    position: fixed; top:0; left:0; right:0; z-index:1000;
+    background: rgba(10,15,46,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--navy-border);
+    padding: 0 2rem;
+    height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-brand {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .nav-logo {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .nav-brand-text {
+    font-size: 1.1rem; font-weight: 800;
+    background: linear-gradient(90deg, var(--cyan), var(--purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+  }
+  .nav-links {
+    display: flex; align-items: center; gap: 0.25rem;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: 0.82rem; font-weight: 500;
+    padding: 6px 14px; border-radius: 6px;
+    transition: all 0.2s;
+  }
+  .nav-links a:hover { color: var(--white); background: var(--navy-border); }
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .btn-ghost {
+    background: none; border: 1px solid var(--navy-border);
+    color: var(--text); padding: 7px 16px; border-radius: 7px;
+    font-size: 0.8rem; font-weight: 500; cursor: pointer;
+    transition: all 0.2s; font-family: inherit;
+  }
+  .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    border: none; color: var(--navy); padding: 8px 18px; border-radius: 7px;
+    font-size: 0.82rem; font-weight: 700; cursor: pointer;
+    transition: opacity 0.2s; font-family: inherit;
+  }
+  .btn-primary:hover { opacity: 0.88; }
+  .live-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse-dot 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%,100% { opacity:1; transform: scale(1); }
+    50% { opacity:0.5; transform: scale(1.3); }
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative; min-height: 100vh;
+    display: flex; align-items: center;
+    overflow: hidden;
+    padding-top: 64px;
+  }
+  .hero-canvas {
+    position: absolute; inset:0; z-index:0;
+  }
+  .hero-content {
+    position: relative; z-index:2;
+    max-width: 1200px; margin: 0 auto; padding: 4rem 2rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--cyan-dim); border: 1px solid rgba(0,212,255,0.3);
+    color: var(--cyan); padding: 6px 14px; border-radius: 20px;
+    font-size: 0.75rem; font-weight: 600; margin-bottom: 1.5rem;
+    letter-spacing: 0.5px;
+  }
+  .hero-title {
+    font-size: clamp(2.2rem, 4vw, 3.6rem);
+    font-weight: 900; line-height: 1.08;
+    color: var(--white);
+    letter-spacing: -1.5px;
+    margin-bottom: 1.2rem;
+  }
+  .hero-title .accent { color: var(--cyan); }
+  .hero-title .accent2 { color: var(--purple); }
+  .hero-desc {
+    font-size: 1rem; line-height: 1.7; color: var(--muted);
+    margin-bottom: 2rem; max-width: 480px;
+  }
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-hero {
+    padding: 12px 28px; border-radius: 10px;
+    font-size: 0.92rem; font-weight: 700; cursor: pointer;
+    font-family: inherit; transition: all 0.2s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .btn-hero-primary {
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    border: none; color: var(--navy);
+  }
+  .btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,212,255,0.4); }
+  .btn-hero-outline {
+    background: none; border: 1px solid var(--navy-border);
+    color: var(--white);
+  }
+  .btn-hero-outline:hover { border-color: var(--cyan); color: var(--cyan); }
+  .hero-stats {
+    display: flex; gap: 2rem; margin-top: 2.5rem;
+    padding-top: 2rem; border-top: 1px solid var(--navy-border);
+  }
+  .hero-stat-val {
+    font-size: 1.6rem; font-weight: 800; color: var(--white);
+    font-variant-numeric: tabular-nums;
+  }
+  .hero-stat-label { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+  /* Blockchain visual */
+  .hero-visual {
+    position: relative; height: 460px;
+  }
+  .blockchain-card {
+    position: absolute;
+    background: var(--navy-card);
+    border: 1px solid var(--navy-border);
+    border-radius: 14px;
+    padding: 1rem 1.2rem;
+    backdrop-filter: blur(10px);
+  }
+  .bc1 { top:0; left:50%; transform: translateX(-50%); width: 230px; }
+  .bc2 { top: 140px; left: 0; width: 200px; }
+  .bc3 { top: 140px; right: 0; width: 200px; }
+  .bc4 { top: 290px; left: 50%; transform: translateX(-50%); width: 230px; }
+  .bc-label { font-size: 0.65rem; color: var(--cyan); font-family: 'JetBrains Mono', monospace; font-weight: 600; margin-bottom: 6px; letter-spacing:1px; }
+  .bc-hash { font-size: 0.6rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 8px; word-break: break-all; }
+  .bc-data { font-size: 0.75rem; color: var(--white); font-weight: 500; }
+  .bc-connector {
+    position: absolute;
+    background: linear-gradient(180deg, var(--cyan), var(--purple));
+    width: 2px;
+    animation: flow 2s linear infinite;
+  }
+  @keyframes flow {
+    0% { opacity:0.3; } 50% { opacity:1; } 100% { opacity:0.3; }
+  }
+  .conn1 { height: 50px; left: 50%; top: 100px; }
+  .conn2 { height: 50px; left: 50%; top: 240px; }
+  .conn-h {
+    position: absolute; height: 2px;
+    background: linear-gradient(90deg, var(--purple), var(--cyan));
+    animation: flow 2s linear infinite;
+  }
+  .conn3 { width: 90px; top: 170px; left: 200px; }
+  .conn4 { width: 90px; top: 170px; right: 200px; }
+
+  /* ── SECTIONS ── */
+  section { padding: 5rem 0; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+  .section-label {
+    font-size: 0.72rem; font-weight: 600; color: var(--cyan); letter-spacing: 2px;
+    text-transform: uppercase; margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 800;
+    color: var(--white); letter-spacing: -1px; margin-bottom: 0.75rem;
+  }
+  .section-desc { font-size: 0.95rem; color: var(--muted); max-width: 560px; line-height: 1.7; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--navy-card);
+    border: 1px solid var(--navy-border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.25s;
+  }
+  .card:hover {
+    border-color: rgba(0,212,255,0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+
+  /* ── AI SERVICE LAYER ── */
+  .ai-services-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+    margin-top: 2.5rem;
+  }
+  .service-card {
+    background: var(--navy-card); border: 1px solid var(--navy-border);
+    border-radius: 14px; padding: 1.4rem;
+    transition: all 0.25s; cursor: default;
+    position: relative; overflow: hidden;
+  }
+  .service-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background: linear-gradient(90deg, var(--cyan), var(--purple));
+    opacity:0; transition: opacity 0.25s;
+  }
+  .service-card:hover::before { opacity:1; }
+  .service-card:hover { border-color: rgba(0,212,255,0.25); transform: translateY(-2px); }
+  .service-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-bottom: 0.9rem;
+  }
+  .service-name { font-size: 0.9rem; font-weight: 700; color: var(--white); margin-bottom: 0.4rem; }
+  .service-desc { font-size: 0.77rem; color: var(--muted); line-height: 1.5; }
+
+  /* ── DASHBOARD MODULES ── */
+  .modules-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;
+    margin-top: 2.5rem;
+  }
+  .module-card {
+    background: var(--navy-card); border: 1px solid var(--navy-border);
+    border-radius: 16px; overflow: hidden;
+  }
+  .module-header {
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid var(--navy-border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .module-title-row { display: flex; align-items: center; gap: 10px; }
+  .module-num {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    color: var(--navy); font-size: 0.7rem; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .module-title { font-size: 0.85rem; font-weight: 700; color: var(--white); }
+  .module-badge {
+    font-size: 0.65rem; padding: 3px 8px; border-radius: 20px; font-weight: 600;
+  }
+  .badge-live { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,229,160,0.3); }
+  .badge-ai { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(124,92,252,0.3); }
+  .module-body { padding: 1.2rem; }
+
+  /* Doctor Dashboard */
+  .patient-info { margin-bottom: 1rem; }
+  .patient-name { font-size: 0.85rem; font-weight: 700; color: var(--white); }
+  .patient-id { font-size: 0.7rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+  .symptoms-box {
+    background: var(--navy); border: 1px solid var(--navy-border);
+    border-radius: 8px; padding: 0.7rem; margin-bottom: 1rem;
+    font-size: 0.77rem; color: var(--text);
+  }
+  .symptoms-label { font-size: 0.65rem; color: var(--muted); margin-bottom: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .diagnoses-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1rem; }
+  .diagnosis-item {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--navy); border-radius: 8px; padding: 8px 10px;
+  }
+  .diag-name { font-size: 0.78rem; color: var(--white); font-weight: 500; }
+  .confidence-bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .confidence-bar { width: 60px; height: 4px; background: var(--navy-border); border-radius: 2px; }
+  .confidence-fill { height: 100%; border-radius: 2px; background: var(--cyan); }
+  .confidence-pct { font-size: 0.7rem; color: var(--cyan); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+  .module-actions { display: flex; gap: 8px; margin-top: 0.8rem; }
+  .btn-sm {
+    padding: 7px 12px; border-radius: 7px;
+    font-size: 0.72rem; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: all 0.2s;
+  }
+  .btn-cyan { background: var(--cyan); border: none; color: var(--navy); }
+  .btn-cyan:hover { opacity: 0.85; }
+  .btn-outline-sm { background: none; border: 1px solid var(--navy-border); color: var(--text); }
+  .btn-outline-sm:hover { border-color: var(--cyan); color: var(--cyan); }
+  .btn-green { background: var(--green); border: none; color: var(--navy); }
+  .btn-green:hover { opacity: 0.85; }
+  .btn-purple { background: var(--purple); border: none; color: var(--white); }
+  .btn-purple:hover { opacity: 0.85; }
+
+  /* AI Insights Box */
+  .ai-insight-box {
+    background: var(--purple-dim); border: 1px solid rgba(124,92,252,0.25);
+    border-radius: 10px; padding: 0.9rem; margin-top: 0.8rem;
+  }
+  .ai-insight-label { font-size: 0.65rem; color: var(--purple); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+  .ai-insight-text { font-size: 0.77rem; color: var(--text); line-height: 1.5; }
+
+  /* Patient Portal */
+  .risk-score-block {
+    display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;
+  }
+  .risk-circle {
+    position: relative; width: 70px; height: 70px;
+  }
+  .risk-circle svg { transform: rotate(-90deg); }
+  .risk-circle-label {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    text-align: center;
+  }
+  .risk-pct { font-size: 1rem; font-weight: 800; color: var(--white); line-height: 1; }
+  .risk-level { font-size: 0.55rem; color: var(--green); font-weight: 600; }
+  .risk-details { flex: 1; }
+  .risk-detail-title { font-size: 0.78rem; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+  .risk-detail-list { list-style: none; }
+  .risk-detail-list li { font-size: 0.72rem; color: var(--muted); padding: 2px 0; display: flex; align-items: center; gap: 5px; }
+  .risk-detail-list li::before { content:'•'; color: var(--amber); }
+  .health-score-row {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--navy); border-radius: 8px; padding: 10px 12px;
+    margin-top: 0.8rem;
+  }
+  .health-score-label { font-size: 0.72rem; color: var(--muted); }
+  .health-score-val { font-size: 1.5rem; font-weight: 800; color: var(--green); }
+  .health-score-sub { font-size: 0.65rem; color: var(--green); }
+  .recommendations-box { margin-top: 0.8rem; }
+  .rec-label { font-size: 0.65rem; color: var(--cyan); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .rec-list { list-style: none; }
+  .rec-list li { font-size: 0.75rem; color: var(--text); padding: 4px 0; display: flex; align-items: center; gap: 6px; }
+  .rec-list li::before { content:'✓'; color: var(--green); font-weight: 700; font-size: 0.65rem; }
+
+  /* Emergency */
+  .alert-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 0.8rem; }
+  .alert-item {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--navy); border-radius: 8px; padding: 8px 10px;
+  }
+  .alert-patient { font-size: 0.78rem; color: var(--white); font-weight: 600; }
+  .alert-condition { font-size: 0.7rem; color: var(--muted); }
+  .risk-badge {
+    font-size: 0.62rem; padding: 3px 8px; border-radius: 4px; font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .risk-high { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,75,110,0.3); }
+  .risk-medium { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(255,181,71,0.3); }
+  .risk-low { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,229,160,0.3); }
+  .prediction-box {
+    background: var(--red-dim); border: 1px solid rgba(255,75,110,0.25);
+    border-radius: 10px; padding: 0.9rem;
+  }
+  .pred-label { font-size: 0.65rem; color: var(--red); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .pred-pct { font-size: 2rem; font-weight: 900; color: var(--red); line-height: 1; }
+  .pred-desc { font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
+  .pred-action { font-size: 0.72rem; color: var(--amber); margin-top: 6px; font-weight: 600; }
+
+  /* Pharmacy */
+  .drug-check-box {
+    background: var(--amber-dim); border: 1px solid rgba(255,181,71,0.25);
+    border-radius: 10px; padding: 0.9rem; margin-bottom: 0.8rem;
+  }
+  .drug-check-label { font-size: 0.65rem; color: var(--amber); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .drug-interaction-result { font-size: 0.8rem; color: var(--amber); font-weight: 600; display: flex; align-items: center; gap: 5px; }
+  .drug-rec { font-size: 0.72rem; color: var(--text); margin-top: 5px; }
+  .stock-forecast { margin-top: 0.8rem; }
+  .forecast-label { font-size: 0.65rem; color: var(--cyan); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .forecast-chart { height: 60px; background: var(--navy); border-radius: 8px; position: relative; overflow: hidden; }
+  .forecast-line {
+    position: absolute; bottom: 5px; left: 0; right: 0;
+    height: 2px;
+  }
+
+  /* Billing */
+  .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 0.8rem; }
+  .invoice-table td { padding: 6px 0; font-size: 0.75rem; }
+  .invoice-table td:last-child { text-align: right; color: var(--white); font-weight: 600; }
+  .invoice-table .total-row td { border-top: 1px solid var(--navy-border); padding-top: 8px; font-weight: 700; color: var(--cyan); font-size: 0.82rem; }
+  .fraud-score-box {
+    background: var(--green-dim); border: 1px solid rgba(0,229,160,0.25);
+    border-radius: 10px; padding: 0.9rem;
+  }
+  .fraud-pct { font-size: 1.6rem; font-weight: 900; color: var(--green); }
+  .fraud-label { font-size: 0.65rem; color: var(--green); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .analysis-list { list-style: none; margin-top: 8px; }
+  .analysis-list li { font-size: 0.72rem; color: var(--text); padding: 3px 0; display: flex; align-items: center; gap: 5px; }
+  .analysis-list li::before { content:'✓'; color: var(--green); }
+
+  /* Audit */
+  .anomaly-alert {
+    background: var(--red-dim); border: 1px solid rgba(255,75,110,0.25);
+    border-radius: 10px; padding: 0.9rem; margin-bottom: 0.8rem;
+  }
+  .anomaly-label { font-size: 0.65rem; color: var(--red); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .anomaly-user { font-size: 0.82rem; color: var(--white); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+  .anomaly-desc { font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
+  .compliance-score-big { font-size: 2.5rem; font-weight: 900; color: var(--green); line-height: 1; }
+  .compliance-out-of { font-size: 0.9rem; color: var(--muted); }
+  .compliance-label { font-size: 0.65rem; color: var(--green); font-weight: 700; margin-top: 2px; }
+  .monitoring-list { margin-top: 0.8rem; display: flex; flex-direction: column; gap: 5px; }
+  .monitoring-item { display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; }
+  .monitoring-key { color: var(--muted); }
+  .status-good { color: var(--green); font-weight: 600; }
+
+  /* ── BLOCKCHAIN SECTION ── */
+  .blockchain-flow {
+    display: flex; align-items: center; gap: 0; margin-top: 2.5rem;
+    overflow-x: auto; padding-bottom: 1rem;
+  }
+  .block-node {
+    background: var(--navy-card); border: 1px solid var(--navy-border);
+    border-radius: 12px; padding: 1.2rem; min-width: 170px;
+    flex-shrink: 0;
+  }
+  .block-number { font-size: 0.65rem; color: var(--cyan); font-family: 'JetBrains Mono', monospace; font-weight: 600; margin-bottom: 6px; }
+  .block-hash { font-size: 0.6rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 8px; word-break: break-all; }
+  .block-data-item { font-size: 0.72rem; color: var(--text); padding: 2px 0; }
+  .block-verified { display: flex; align-items: center; gap: 5px; margin-top: 8px; font-size: 0.65rem; color: var(--green); font-weight: 600; }
+  .block-arrow {
+    flex-shrink: 0; display: flex; align-items: center; padding: 0 0.5rem;
+    color: var(--cyan); font-size: 1.2rem;
+  }
+
+  /* ── TECH STACK ── */
+  .tech-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+    margin-top: 2.5rem;
+  }
+  .tech-card {
+    background: var(--navy-card); border: 1px solid var(--navy-border);
+    border-radius: 12px; padding: 1.2rem; text-align: center;
+    transition: all 0.2s;
+  }
+  .tech-card:hover { border-color: rgba(0,212,255,0.3); }
+  .tech-icon { font-size: 2rem; margin-bottom: 0.6rem; }
+  .tech-name { font-size: 0.82rem; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+  .tech-desc { font-size: 0.7rem; color: var(--muted); }
+
+  /* ── DATA FLOW ── */
+  .flow-steps {
+    display: flex; align-items: flex-start; gap: 0;
+    margin-top: 2.5rem; flex-wrap: wrap;
+  }
+  .flow-step {
+    flex: 1; min-width: 140px;
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    position: relative;
+  }
+  .flow-step:not(:last-child)::after {
+    content: '→';
+    position: absolute; right: -10px; top: 28px;
+    color: var(--cyan); font-size: 1.2rem;
+    z-index:1;
+  }
+  .flow-icon {
+    width: 56px; height: 56px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; margin-bottom: 0.8rem;
+  }
+  .flow-step-name { font-size: 0.82rem; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+  .flow-step-desc { font-size: 0.7rem; color: var(--muted); line-height: 1.5; }
+
+  /* ── BENEFITS ── */
+  .benefits-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+    margin-top: 2.5rem;
+  }
+  .benefit-card {
+    background: var(--navy-card); border: 1px solid var(--navy-border);
+    border-radius: 14px; padding: 1.4rem;
+    display: flex; gap: 1rem; transition: all 0.2s;
+  }
+  .benefit-card:hover { border-color: rgba(0,212,255,0.2); }
+  .benefit-icon { font-size: 1.6rem; flex-shrink: 0; }
+  .benefit-title { font-size: 0.85rem; font-weight: 700; color: var(--white); margin-bottom: 5px; }
+  .benefit-desc { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--navy-card);
+    border-top: 1px solid var(--navy-border);
+    padding: 3rem 0 2rem;
+  }
+  .footer-grid {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem;
+    margin-bottom: 2.5rem;
+  }
+  .footer-brand-text { font-size: 0.82rem; color: var(--muted); line-height: 1.7; margin-top: 0.8rem; max-width: 260px; }
+  .footer-heading { font-size: 0.78rem; font-weight: 700; color: var(--white); margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .footer-links a { font-size: 0.78rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--cyan); }
+  .footer-bottom {
+    border-top: 1px solid var(--navy-border); padding-top: 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem;
+  }
+  .footer-copy { font-size: 0.75rem; color: var(--muted); }
+  .footer-hash { font-size: 0.65rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+
+  /* ── MINI CHART ── */
+  .sparkline { display: flex; align-items: flex-end; gap: 3px; height: 36px; }
+  .spark-bar { width: 6px; border-radius: 3px 3px 0 0; background: var(--cyan); opacity: 0.6; transition: opacity 0.2s; }
+  .spark-bar:hover { opacity: 1; }
+
+  /* ── STATUS STRIP ── */
+  .status-strip {
+    background: var(--green-dim); border: 1px solid rgba(0,229,160,0.2);
+    border-radius: 8px; padding: 8px 12px;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.72rem; color: var(--green); font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  /* divider */
+  .divider { height: 1px; background: var(--navy-border); margin: 0; }
+
+  /* Tabs (mockup) */
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--navy-border); margin-bottom: 0.8rem; }
+  .tab {
+    padding: 7px 14px; font-size: 0.73rem; font-weight: 500; cursor: pointer;
+    color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px;
+    transition: all 0.2s;
+  }
+  .tab.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+
+  /* Grid 3 col */
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+
+  /* Responsive tweaks */
+  @media(max-width: 900px) {
+    .hero-content { grid-template-columns: 1fr; }
+    .hero-visual { display: none; }
+    .ai-services-grid { grid-template-columns: repeat(2,1fr); }
+    .modules-grid { grid-template-columns: 1fr; }
+    .tech-grid { grid-template-columns: repeat(2,1fr); }
+    .benefits-grid { grid-template-columns: repeat(2,1fr); }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .flow-steps { gap: 1rem; }
+    .flow-step::after { display: none; }
+  }
+  @media(max-width: 600px) {
+    .ai-services-grid { grid-template-columns: 1fr; }
+    .benefits-grid { grid-template-columns: 1fr; }
+    .tech-grid { grid-template-columns: 1fr 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Glow BG effects */
+  .glow-orb {
+    position: absolute; border-radius: 50%;
+    filter: blur(80px); pointer-events: none; z-index: 0;
+  }
+  .glow-1 { width: 400px; height: 400px; background: rgba(0,212,255,0.06); top: 10%; left: -10%; }
+  .glow-2 { width: 350px; height: 350px; background: rgba(124,92,252,0.07); top: 40%; right: -5%; }
+  .glow-3 { width: 300px; height: 300px; background: rgba(0,229,160,0.05); bottom: 10%; left: 30%; }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-logo">⚕</div>
+    <span class="nav-brand-text">MediChain HMS</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#modules">Dashboard</a></li>
+    <li><a href="#ai">AI Services</a></li>
+    <li><a href="#blockchain">Blockchain</a></li>
+    <li><a href="#tech">Tech Stack</a></li>
+    <li><a href="#benefits">Benefits</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="live-dot"></div>
+    <button class="btn-ghost">Sign In</button>
+    <button class="btn-primary">Get Demo</button>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="glow-orb glow-1"></div>
+  <div class="glow-orb glow-2"></div>
+  <canvas class="hero-canvas" id="networkCanvas"></canvas>
+  <div class="hero-content">
+    <div>
+      <div class="hero-badge">
+        <span>🔗</span> AI + Hyperledger Fabric + IPFS Architecture
+      </div>
+      <h1 class="hero-title">
+        Hospital Management<br>
+        <span class="accent">Smarter</span> with <span class="accent2">Blockchain</span>
+      </h1>
+      <p class="hero-desc">
+        A next-generation Hospital Management System powered by AI diagnostics, Hyperledger Fabric blockchain, and IPFS decentralized storage — making healthcare faster, safer, and more transparent.
+      </p>
+      <div class="hero-actions">
+        <button class="btn-hero btn-hero-primary" onclick="document.getElementById('modules').scrollIntoView({behavior:'smooth'})">
+          ▶ Explore Dashboards
+        </button>
+        <button class="btn-hero btn-hero-outline" onclick="document.getElementById('blockchain').scrollIntoView({behavior:'smooth'})">
+          🔗 View Blockchain
+        </button>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-val">98%</div>
+          <div class="hero-stat-label">Compliance Score</div>
+        </div>
+        <div>
+          <div class="hero-stat-val">92%</div>
+          <div class="hero-stat-label">AI Diagnosis Accuracy</div>
+        </div>
+        <div>
+          <div class="hero-stat-val">18%</div>
+          <div class="hero-stat-label">Fraud Risk (Low)</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <!-- Blockchain cards visualization -->
+      <div style="position:relative; height:100%;">
+        <div class="blockchain-card bc1">
+          <div class="bc-label">BLOCK #10041</div>
+          <div class="bc-hash">0x3f9a...c2b1e</div>
+          <div class="bc-data">Patient Record — John Doe</div>
+          <div style="font-size:0.65rem; color:var(--green); margin-top:5px;">✓ Verified on Chain</div>
+        </div>
+        <div class="blockchain-card bc2">
+          <div class="bc-label">BLOCK #10039</div>
+          <div class="bc-hash">0x8d7c...f4a22</div>
+          <div class="bc-data">Drug Dispensed — Warfarin 5mg</div>
+          <div style="font-size:0.65rem; color:var(--green); margin-top:5px;">✓ Verified on Chain</div>
+        </div>
+        <div class="blockchain-card bc3">
+          <div class="bc-label">BLOCK #10040</div>
+          <div class="bc-hash">0x1b5e...907d3</div>
+          <div class="bc-data">Invoice #INV-1024 — ₹7,500</div>
+          <div style="font-size:0.65rem; color:var(--green); margin-top:5px;">✓ Verified on Chain</div>
+        </div>
+        <div class="blockchain-card bc4">
+          <div class="bc-label">BLOCK #10042</div>
+          <div class="bc-hash">0x6e2f...a8d90</div>
+          <div class="bc-data">Treatment Plan — Antiviral Therapy</div>
+          <div style="font-size:0.65rem; color:var(--green); margin-top:5px;">✓ Verified on Chain</div>
+        </div>
+        <!-- Connectors -->
+        <div style="position:absolute; left:calc(50% - 1px); top:100px; height:55px; width:2px; background:linear-gradient(180deg,var(--cyan),var(--purple)); animation: flow 2s linear infinite;"></div>
+        <div style="position:absolute; left:calc(50% - 1px); top:250px; height:55px; width:2px; background:linear-gradient(180deg,var(--purple),var(--cyan)); animation: flow 2.3s linear infinite;"></div>
+        <div style="position:absolute; top:175px; left:200px; right:200px; height:2px; background:linear-gradient(90deg,var(--cyan),var(--purple)); animation: flow 1.8s linear infinite;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ARCHITECTURE STRIP ── -->
+<div style="background: var(--navy-card); border-top: 1px solid var(--navy-border); border-bottom: 1px solid var(--navy-border); padding: 1rem 0;">
+  <div class="container">
+    <div style="display:flex; align-items:center; gap:2rem; flex-wrap:wrap; justify-content:center;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:1.1rem;">🖥</span>
+        <div>
+          <div style="font-size:0.7rem; color:var(--muted); font-weight:600;">FRONTEND</div>
+          <div style="font-size:0.78rem; color:var(--white); font-weight:600;">React · Mobile · Admin</div>
+        </div>
+      </div>
+      <div style="color:var(--navy-border); font-size:1.2rem;">⟷</div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:1.1rem;">🔌</span>
+        <div>
+          <div style="font-size:0.7rem; color:var(--muted); font-weight:600;">API GATEWAY</div>
+          <div style="font-size:0.78rem; color:var(--white); font-weight:600;">REST · WebSocket · GraphQL</div>
+        </div>
+      </div>
+      <div style="color:var(--navy-border); font-size:1.2rem;">⟷</div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:1.1rem;">🤖</span>
+        <div>
+          <div style="font-size:0.7rem; color:var(--muted); font-weight:600;">AI SERVICE LAYER</div>
+          <div style="font-size:0.78rem; color:var(--white); font-weight:600;">Diagnosis · Risk · Fraud · NLP</div>
+        </div>
+      </div>
+      <div style="color:var(--navy-border); font-size:1.2rem;">⟷</div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:1.1rem;">🔗</span>
+        <div>
+          <div style="font-size:0.7rem; color:var(--muted); font-weight:600;">INTEGRATION LAYER</div>
+          <div style="font-size:0.78rem; color:var(--white); font-weight:600;">Hyperledger · IPFS · AI Models</div>
+        </div>
+      </div>
+      <div style="color:var(--navy-border); font-size:1.2rem;">⟷</div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:1.1rem;">🗄</span>
+        <div>
+          <div style="font-size:0.7rem; color:var(--muted); font-weight:600;">BACKEND</div>
+          <div style="font-size:0.78rem; color:var(--white); font-weight:600;">Fabric Network · IPFS · DB</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── AI SERVICE LAYER ── -->
+<section id="ai" style="position:relative; overflow:hidden;">
+  <div class="glow-orb glow-3"></div>
+  <div class="container" style="position:relative; z-index:1;">
+    <div class="section-label">AI Service Layer</div>
+    <h2 class="section-title">Intelligent AI Modules</h2>
+    <p class="section-desc">Six specialized AI engines work in parallel to automate diagnostics, detect fraud, predict resource needs, and flag dangerous drug interactions.</p>
+    <div class="ai-services-grid">
+      <div class="service-card">
+        <div class="service-icon" style="background:var(--cyan-dim);">🔬</div>
+        <div class="service-name">Diagnosis Assistant</div>
+        <div class="service-desc">Predicts possible diseases from patient symptoms, history, and reports. Confidence-scored differential diagnosis using scikit-learn & XGBoost.</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon" style="background:var(--purple-dim);">💊</div>
+        <div class="service-name">Treatment Recommender</div>
+        <div class="service-desc">Suggests personalized treatment plans based on diagnosis, patient history, allergies, and current medications using NLP models (GPT, BERT).</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon" style="background:var(--amber-dim);">📊</div>
+        <div class="service-name">Risk Prediction</div>
+        <div class="service-desc">Predicts patient risk of readmission and complications using Deep Learning (TensorFlow/PyTorch). Flags high-risk patients for proactive care.</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon" style="background:var(--red-dim);">🛡</div>
+        <div class="service-name">Fraud Detection</div>
+        <div class="service-desc">Detects insurance claim anomalies and billing irregularities in real-time. Pattern recognition identifies duplicate claims and inflated charges.</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon" style="background:var(--green-dim);">⚠️</div>
+        <div class="service-name">Drug Interaction Checker</div>
+        <div class="service-desc">Checks drug-drug and drug-patient interactions, generating clinical alerts. Prevents adverse events at the point of prescription and dispensing.</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon" style="background:var(--cyan-dim);">📦</div>
+        <div class="service-name">Resource Forecasting</div>
+        <div class="service-desc">Predicts ICU bed needs, inventory levels, and staffing requirements using Prophet & LSTM time series models for optimized operations.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DASHBOARD MODULES ── -->
+<section id="modules">
+  <div class="container">
+    <div class="section-label">AI-Powered Modules</div>
+    <h2 class="section-title">How AI Works in Each Module</h2>
+    <p class="section-desc">Every clinical and administrative department is enhanced with purpose-built AI. Here's what clinicians and staff see in action.</p>
+
+    <div class="modules-grid">
+
+      <!-- 1. Doctor Treatment Dashboard -->
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-title-row">
+            <div class="module-num">1</div>
+            <div class="module-title">AI in Doctor Treatment Dashboard</div>
+          </div>
+          <span class="module-badge badge-ai">AI Assist</span>
+        </div>
+        <div class="module-body">
+          <div class="tabs">
+            <div class="tab active">Treatment</div>
+            <div class="tab">Prescriptions</div>
+            <div class="tab">Reports</div>
+          </div>
+          <div class="patient-info">
+            <div class="patient-name">Patient: John Doe</div>
+            <div class="patient-id">P001 · Admitted: Jun 18 2026</div>
+          </div>
+          <div class="symptoms-box">
+            <div class="symptoms-label">Enter Symptoms</div>
+            Fever, headache, fatigue, dry cough
+          </div>
+          <div style="font-size:0.72rem; color:var(--cyan); font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">AI Suggested Diagnoses</div>
+          <div class="diagnoses-list">
+            <div class="diagnosis-item">
+              <div class="diag-name">1. Viral Fever</div>
+              <div class="confidence-bar-wrap">
+                <div class="confidence-bar"><div class="confidence-fill" style="width:92%;"></div></div>
+                <span class="confidence-pct">92%</span>
+              </div>
+            </div>
+            <div class="diagnosis-item">
+              <div class="diag-name">2. Influenza</div>
+              <div class="confidence-bar-wrap">
+                <div class="confidence-bar"><div class="confidence-fill" style="width:78%; background:var(--amber);"></div></div>
+                <span class="confidence-pct" style="color:var(--amber);">78%</span>
+              </div>
+            </div>
+            <div class="diagnosis-item">
+              <div class="diag-name">3. Dengue</div>
+              <div class="confidence-bar-wrap">
+                <div class="confidence-bar"><div class="confidence-fill" style="width:65%; background:var(--muted);"></div></div>
+                <span class="confidence-pct" style="color:var(--muted);">65%</span>
+              </div>
+            </div>
+          </div>
+          <div class="ai-insight-box">
+            <div class="ai-insight-label">🤖 AI Insights</div>
+            <div class="ai-insight-text">The patient may be suffering from viral infection. Recommended Tests: CBC, NS1 Antigen, Chest X-Ray.</div>
+          </div>
+          <div class="module-actions">
+            <button class="btn-sm btn-cyan">Analyze with AI</button>
+            <button class="btn-sm btn-outline-sm">Generate Treatment Plan</button>
+            <button class="btn-sm btn-green">🔗 Save to Blockchain</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Patient Portal -->
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-title-row">
+            <div class="module-num">2</div>
+            <div class="module-title">AI in Patient Portal</div>
+          </div>
+          <span class="module-badge badge-ai">Health AI</span>
+        </div>
+        <div class="module-body">
+          <div style="font-size:0.85rem; color:var(--white); font-weight:600; margin-bottom:0.4rem;">Welcome back, Shiv 👋</div>
+          <div class="tabs">
+            <div class="tab">Overview</div>
+            <div class="tab active">AI Health Insights</div>
+            <div class="tab">Predictions</div>
+          </div>
+          <div style="font-size:0.72rem; color:var(--cyan); font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">AI Health Insights</div>
+          <div class="risk-score-block">
+            <div class="risk-circle">
+              <svg width="70" height="70" viewBox="0 0 70 70">
+                <circle cx="35" cy="35" r="28" fill="none" stroke="var(--navy-border)" stroke-width="6"/>
+                <circle cx="35" cy="35" r="28" fill="none" stroke="var(--green)" stroke-width="6"
+                  stroke-dasharray="176" stroke-dashoffset="120" stroke-linecap="round"/>
+              </svg>
+              <div class="risk-circle-label">
+                <div class="risk-pct">32%</div>
+                <div class="risk-level">LOW</div>
+              </div>
+            </div>
+            <div class="risk-details">
+              <div class="risk-detail-title">Possible Concerns</div>
+              <ul class="risk-detail-list">
+                <li>High Blood Pressure</li>
+                <li>Lifestyle Related Risk</li>
+              </ul>
+            </div>
+          </div>
+          <div class="health-score-row">
+            <div>
+              <div class="health-score-label">Health Score History</div>
+              <div class="health-score-sub">+5% vs last month</div>
+            </div>
+            <div style="text-align:right">
+              <div class="health-score-val">82</div>
+              <div class="health-score-sub">Good</div>
+            </div>
+          </div>
+          <div class="recommendations-box">
+            <div class="rec-label">AI Recommendations</div>
+            <ul class="rec-list">
+              <li>Regular exercise 30 mins/day</li>
+              <li>Reduce salt intake</li>
+              <li>Schedule BP check-up</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Billing & Insurance -->
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-title-row">
+            <div class="module-num">3</div>
+            <div class="module-title">AI in Billing & Insurance</div>
+          </div>
+          <span class="module-badge badge-ai">Fraud AI</span>
+        </div>
+        <div class="module-body">
+          <div style="font-size:0.72rem; color:var(--muted); font-family:'JetBrains Mono',monospace; margin-bottom:0.8rem;">Invoice #INV-1024</div>
+          <table class="invoice-table">
+            <tr><td style="color:var(--muted);">Consultation Fee</td><td>₹1,500</td></tr>
+            <tr><td style="color:var(--muted);">Medicine Charges</td><td>₹3,500</td></tr>
+            <tr><td style="color:var(--muted);">Diagnostic Charges</td><td>₹2,500</td></tr>
+            <tr class="total-row"><td>Total Amount</td><td>₹7,500</td></tr>
+          </table>
+          <div class="fraud-score-box">
+            <div class="fraud-label">AI Claim Analysis — Fraud Risk Score</div>
+            <div class="fraud-pct">18% <span style="font-size:0.9rem; font-weight:500;">Low Risk</span></div>
+            <ul class="analysis-list">
+              <li>No duplicate claims</li>
+              <li>Patient verified</li>
+              <li>Treatment pattern normal</li>
+            </ul>
+          </div>
+          <div style="margin-top:0.8rem; display:flex; gap:8px;">
+            <button class="btn-sm btn-green" style="flex:1;">✓ Approve Claim</button>
+            <button class="btn-sm btn-outline-sm">🔗 Save to Blockchain</button>
+          </div>
+          <div style="margin-top:0.8rem; background:var(--cyan-dim); border:1px solid rgba(0,212,255,0.2); border-radius:8px; padding:0.7rem;">
+            <div style="font-size:0.65rem; color:var(--cyan); font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">AI Cost Optimization</div>
+            <div style="font-size:0.75rem; color:var(--text);">Save up to <strong style="color:var(--green);">₹850</strong> with generic medicine substitution & optimized lab tests.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Emergency Command Center -->
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-title-row">
+            <div class="module-num">4</div>
+            <div class="module-title">AI Emergency Command Center</div>
+          </div>
+          <span class="module-badge badge-live">● Live</span>
+        </div>
+        <div class="module-body">
+          <div style="font-size:0.72rem; color:var(--red); font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">AI Risk Alerts</div>
+          <div class="alert-list">
+            <div class="alert-item">
+              <div>
+                <div class="alert-patient">P1004 (Ramesh)</div>
+                <div class="alert-condition">Cardiac Arrest Risk</div>
+              </div>
+              <span class="risk-badge risk-high">HIGH</span>
+            </div>
+            <div class="alert-item">
+              <div>
+                <div class="alert-patient">P1009 (Anita)</div>
+                <div class="alert-condition">Sepsis Risk</div>
+              </div>
+              <span class="risk-badge risk-medium">MEDIUM</span>
+            </div>
+            <div class="alert-item">
+              <div>
+                <div class="alert-patient">P1012 (Vikas)</div>
+                <div class="alert-condition">Stroke Risk</div>
+              </div>
+              <span class="risk-badge risk-high">HIGH</span>
+            </div>
+            <div class="alert-item">
+              <div>
+                <div class="alert-patient">P1015 (Neha)</div>
+                <div class="alert-condition">Respiratory Risk</div>
+              </div>
+              <span class="risk-badge risk-low">LOW</span>
+            </div>
+          </div>
+          <div class="prediction-box">
+            <div class="pred-label">AI Predictions — Risk of Deterioration (Next 6h)</div>
+            <div class="pred-pct">76%</div>
+            <div class="pred-desc">High Risk — Patient condition may worsen.</div>
+            <div class="pred-action">→ Increase monitoring · Prepare ICU · Notify cardiologist</div>
+          </div>
+          <button class="btn-sm btn-purple" style="width:100%; margin-top:0.8rem; padding:10px;">🚨 Take Action</button>
+        </div>
+      </div>
+
+      <!-- 5. Pharmacy Dashboard -->
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-title-row">
+            <div class="module-num">5</div>
+            <div class="module-title">AI in Pharmacy Dashboard</div>
+          </div>
+          <span class="module-badge badge-ai">Drug AI</span>
+        </div>
+        <div class="module-body">
+          <div class="drug-check-box">
+            <div class="drug-check-label">⚠️ AI Drug Interaction Checker</div>
+            <div style="font-size:0.72rem; color:var(--muted); margin-bottom:6px;">Patient: John Doe — Prescribed: Drug A (Paracetamol) + Drug B (Warfarin)</div>
+            <div class="drug-interaction-result">⚠ Moderate Interaction Found</div>
+            <div class="drug-rec">Warfarin effectiveness may decrease. <strong style="color:var(--amber);">Monitor INR levels regularly.</strong></div>
+          </div>
+          <div class="stock-forecast">
+            <div class="forecast-label">📈 AI Inventory Prediction — Insulin Stock</div>
+            <div style="background:var(--navy); border-radius:8px; padding:0.8rem; margin-top:6px;">
+              <!-- Mini SVG chart -->
+              <svg width="100%" height="60" viewBox="0 0 280 60" preserveAspectRatio="none">
+                <polyline points="0,10 40,15 80,12 120,20 160,30 200,45 240,50 280,58"
+                  fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round"/>
+                <polyline points="0,10 40,12 80,10 120,15 160,22 200,35 240,40 280,45"
+                  fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 4"/>
+                <line x1="0" y1="58" x2="280" y2="58" stroke="var(--navy-border)" stroke-width="1"/>
+              </svg>
+              <div style="display:flex; gap:12px; margin-top:4px;">
+                <div style="display:flex;align-items:center;gap:4px;font-size:0.62rem;color:var(--muted);">
+                  <div style="width:12px;height:2px;background:var(--cyan);border-radius:1px;"></div> Current Stock
+                </div>
+                <div style="display:flex;align-items:center;gap:4px;font-size:0.62rem;color:var(--muted);">
+                  <div style="width:12px;height:2px;background:var(--purple);border-radius:1px;"></div> Predicted
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:8px; font-size:0.75rem; color:var(--cyan);">💡 AI Suggestion: Increase Insulin stock by 20% in next 7 days</div>
+          </div>
+          <button class="btn-sm btn-cyan" style="width:100%; margin-top:0.8rem; padding:9px;">📦 Create Purchase Order</button>
+        </div>
+      </div>
+
+      <!-- 6. Audit & Compliance -->
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-title-row">
+            <div class="module-num">6</div>
+            <div class="module-title">AI in Audit & Compliance</div>
+          </div>
+          <span class="module-badge badge-live">● Monitoring</span>
+        </div>
+        <div class="module-body">
+          <div class="anomaly-alert">
+            <div class="anomaly-label">🔍 AI Anomaly Detection — Suspicious Access</div>
+            <div class="anomaly-user">User: Doctor_007</div>
+            <div class="anomaly-desc">Accessed 23 patient records in 5 mins — unusual pattern detected.</div>
+          </div>
+          <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:1rem;">
+            <div>
+              <div style="font-size:0.65rem; color:var(--green); font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">AI Compliance Score</div>
+              <div class="compliance-score-big">98 <span class="compliance-out-of">/100</span></div>
+              <div class="compliance-label">Excellent</div>
+            </div>
+            <div style="flex:1;">
+              <div style="background:var(--navy); border-radius:8px; overflow:hidden; height:8px; margin-bottom:8px;">
+                <div style="width:98%; height:100%; background:linear-gradient(90deg,var(--cyan),var(--green));"></div>
+              </div>
+              <div class="monitoring-list">
+                <div class="monitoring-item">
+                  <span class="monitoring-key">Data Integrity</span>
+                  <span class="status-good">Good</span>
+                </div>
+                <div class="monitoring-item">
+                  <span class="monitoring-key">Access Control</span>
+                  <span class="status-good">Good</span>
+                </div>
+                <div class="monitoring-item">
+                  <span class="monitoring-key">Policy Adherence</span>
+                  <span class="status-good">Good</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="btn-sm btn-purple" style="width:100%; margin-top:0.8rem; padding:9px;">🔍 Investigate Anomaly</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── BLOCKCHAIN ── -->
+<section id="blockchain" style="background: var(--navy-card); border-top:1px solid var(--navy-border); border-bottom:1px solid var(--navy-border); position:relative; overflow:hidden;">
+  <div class="glow-orb glow-1" style="opacity:0.5;"></div>
+  <div class="container" style="position:relative; z-index:1;">
+    <div class="section-label">Hyperledger Fabric + IPFS</div>
+    <h2 class="section-title">Immutable Blockchain Ledger</h2>
+    <p class="section-desc">Every clinical event — diagnosis, prescription, billing, consent — is cryptographically signed and stored on Hyperledger Fabric. Patient files are stored on IPFS with their hash anchored on-chain.</p>
+
+    <div class="blockchain-flow">
+      <div class="block-node">
+        <div class="block-number">GENESIS BLOCK #0</div>
+        <div class="block-hash">Hash: 0x0000...0000</div>
+        <div class="block-data-item">🏥 Hospital Registry Init</div>
+        <div class="block-data-item">📅 Jan 1, 2024</div>
+        <div class="block-verified">✓ Verified · Immutable</div>
+      </div>
+      <div class="block-arrow">→</div>
+      <div class="block-node" style="border-color: rgba(0,212,255,0.3);">
+        <div class="block-number">BLOCK #10039</div>
+        <div class="block-hash">Hash: 0x8d7c...f4a22 | Prev: 0x3f1b...77cc</div>
+        <div class="block-data-item">💊 Drug Dispensed: Warfarin</div>
+        <div class="block-data-item">👤 Patient: John Doe / P001</div>
+        <div class="block-verified">✓ Verified on Fabric Network</div>
+      </div>
+      <div class="block-arrow">→</div>
+      <div class="block-node" style="border-color: rgba(0,212,255,0.3);">
+        <div class="block-number">BLOCK #10040</div>
+        <div class="block-hash">Hash: 0x1b5e...907d | Prev: 0x8d7c...f4a22</div>
+        <div class="block-data-item">🧾 Invoice #INV-1024: ₹7,500</div>
+        <div class="block-data-item">🛡 Fraud Score: 18% (Low)</div>
+        <div class="block-verified">✓ Verified on Fabric Network</div>
+      </div>
+      <div class="block-arrow">→</div>
+      <div class="block-node" style="border-color: rgba(0,212,255,0.3);">
+        <div class="block-number">BLOCK #10041</div>
+        <div class="block-hash">Hash: 0x3f9a...c2b1 | Prev: 0x1b5e...907d</div>
+        <div class="block-data-item">📋 Treatment Plan Updated</div>
+        <div class="block-data-item">🤖 AI Diagnosis Saved</div>
+        <div class="block-verified">✓ Verified on Fabric Network</div>
+      </div>
+      <div class="block-arrow">→</div>
+      <div class="block-node" style="border-color: rgba(124,92,252,0.4); background: var(--purple-dim);">
+        <div class="block-number" style="color:var(--purple);">BLOCK #10042 · PENDING</div>
+        <div class="block-hash">Hash: Computing…</div>
+        <div class="block-data-item">🔍 Audit Log Entry</div>
+        <div class="block-data-item">📁 IPFS: QmXh7...9dR2</div>
+        <div class="block-verified" style="color:var(--amber);">⏳ Awaiting Consensus</div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(3,1fr); gap:1rem; margin-top:2rem;">
+      <div class="card" style="text-align:center;">
+        <div style="font-size:1.5rem; margin-bottom:6px;">🔐</div>
+        <div style="font-size:0.85rem; font-weight:700; color:var(--white); margin-bottom:5px;">Hyperledger Fabric</div>
+        <div style="font-size:0.75rem; color:var(--muted);">Permissioned blockchain with peer nodes, ordering service, and smart contract chaincode.</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:1.5rem; margin-bottom:6px;">🌐</div>
+        <div style="font-size:0.85rem; font-weight:700; color:var(--white); margin-bottom:5px;">IPFS Decentralized Storage</div>
+        <div style="font-size:0.75rem; color:var(--muted);">Patient documents, scans, and reports stored on IPFS. Content-addressed by hash, linked on-chain.</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:1.5rem; margin-bottom:6px;">📝</div>
+        <div style="font-size:0.85rem; font-weight:700; color:var(--white); margin-bottom:5px;">Smart Contracts (Chaincode)</div>
+        <div style="font-size:0.75rem; color:var(--muted);">Automated execution of consent management, billing approval, and drug dispensing workflows.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DATA FLOW ── -->
+<section id="dataflow">
+  <div class="container">
+    <div class="section-label">AI Data Flow</div>
+    <h2 class="section-title">How Data Moves Through the System</h2>
+    <p class="section-desc">From the first user interaction to secure blockchain storage — every action is processed, analyzed by AI, and permanently recorded.</p>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-icon" style="background:var(--cyan-dim);">👤</div>
+        <div class="flow-step-name">User Input</div>
+        <div class="flow-step-desc">Doctor/staff enters data or performs an action in the HMS interface.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-icon" style="background:var(--purple-dim);">🗄</div>
+        <div class="flow-step-name">Data Collection</div>
+        <div class="flow-step-desc">Data pulled from HMS modules, Blockchain, and IPFS sources.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-icon" style="background:var(--amber-dim);">🤖</div>
+        <div class="flow-step-name">AI Processing</div>
+        <div class="flow-step-desc">AI models analyze data and generate alerts, scores, and predictions.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-icon" style="background:var(--green-dim);">📊</div>
+        <div class="flow-step-name">AI Output</div>
+        <div class="flow-step-desc">Recommendations, risk scores, and insights presented to staff.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-icon" style="background:var(--cyan-dim);">👨‍⚕️</div>
+        <div class="flow-step-name">Action & Decision</div>
+        <div class="flow-step-desc">Doctor/admin takes action based on AI output and clinical judgment.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-icon" style="background:var(--purple-dim);">🔒</div>
+        <div class="flow-step-name">Stored Securely</div>
+        <div class="flow-step-desc">Results and actions stored immutably on Blockchain & IPFS.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TECH STACK ── -->
+<section id="tech" style="background: var(--navy-card); border-top:1px solid var(--navy-border); border-bottom:1px solid var(--navy-border);">
+  <div class="container">
+    <div class="section-label">AI Models & Technologies</div>
+    <h2 class="section-title">Powered by State-of-the-Art ML</h2>
+    <p class="section-desc">A multi-model AI stack combines classical ML, deep learning, NLP, computer vision, and time-series forecasting for comprehensive healthcare intelligence.</p>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <div class="tech-icon">⚙️</div>
+        <div class="tech-name">Machine Learning</div>
+        <div class="tech-desc">Scikit-learn, XGBoost for classification, regression, and anomaly detection tasks.</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">🧠</div>
+        <div class="tech-name">Deep Learning</div>
+        <div class="tech-desc">TensorFlow & PyTorch for complex pattern recognition in clinical data and imaging.</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">💬</div>
+        <div class="tech-name">NLP Models</div>
+        <div class="tech-desc">GPT & BERT for medical text understanding, treatment recommendations, and report generation.</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">👁</div>
+        <div class="tech-name">Computer Vision</div>
+        <div class="tech-desc">CNN models for radiology image analysis, wound assessment, and diagnostic imaging.</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">📈</div>
+        <div class="tech-name">Time Series Forecasting</div>
+        <div class="tech-desc">Prophet & LSTM for inventory prediction, patient volume forecasting, and ICU bed planning.</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">🔗</div>
+        <div class="tech-name">Hyperledger Fabric</div>
+        <div class="tech-desc">Enterprise-grade permissioned blockchain for immutable medical records and audit trails.</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">🌐</div>
+        <div class="tech-name">IPFS Storage</div>
+        <div class="tech-desc">Decentralized, content-addressed storage for patient files, scans, and documents.</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">⚡</div>
+        <div class="tech-name">React + APIs</div>
+        <div class="tech-desc">REST, WebSocket & GraphQL APIs powering real-time dashboards across web, mobile, and admin.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── BENEFITS ── -->
+<section id="benefits">
+  <div class="container">
+    <div class="section-label">Benefits of AI in HMS</div>
+    <h2 class="section-title">Why MediChain Transforms Care</h2>
+    <p class="section-desc">The integration of AI with blockchain doesn't just digitize processes — it fundamentally improves patient outcomes and operational efficiency.</p>
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon">🔬</div>
+        <div>
+          <div class="benefit-title">Improved Diagnostic Accuracy</div>
+          <div class="benefit-desc">AI achieves 92%+ confidence in differential diagnosis, reducing misdiagnosis rates and accelerating treatment decisions.</div>
+        </div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">👤</div>
+        <div>
+          <div class="benefit-title">Personalized Patient Care</div>
+          <div class="benefit-desc">Treatment plans and recommendations tailored to each patient's history, genetics, and lifestyle factors using ML models.</div>
+        </div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">⚡</div>
+        <div>
+          <div class="benefit-title">Early Risk Detection</div>
+          <div class="benefit-desc">Predict deterioration 6+ hours in advance, enabling proactive intervention and significantly reducing ICU emergencies.</div>
+        </div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🛡</div>
+        <div>
+          <div class="benefit-title">Fraud & Anomaly Detection</div>
+          <div class="benefit-desc">Real-time insurance fraud detection and access anomaly alerts protect revenue and ensure regulatory compliance.</div>
+        </div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">💰</div>
+        <div>
+          <div class="benefit-title">Optimized Resources & Cost</div>
+          <div class="benefit-desc">AI-driven inventory forecasting and generic drug substitution reduce operational costs by up to 15% annually.</div>
+        </div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">✅</div>
+        <div>
+          <div class="benefit-title">Better Decision Making</div>
+          <div class="benefit-desc">Clinicians get real-time AI insights, drug interaction warnings, and evidence-based recommendations at the point of care.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section style="background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(124,92,252,0.08)); border-top:1px solid var(--navy-border);">
+  <div class="container" style="text-align:center; padding: 5rem 2rem;">
+    <div class="section-label" style="justify-content:center; display:block;">Get Started</div>
+    <h2 class="section-title" style="margin: 0 auto 1rem;">Ready to Transform Your Hospital?</h2>
+    <p class="section-desc" style="margin: 0 auto 2rem;">Join forward-thinking hospitals deploying AI + blockchain for smarter, safer, and more efficient healthcare delivery.</p>
+    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+      <button class="btn-hero btn-hero-primary">▶ Request a Demo</button>
+      <button class="btn-hero btn-hero-outline">📄 Read Documentation</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="nav-brand" style="margin-bottom:0.8rem;">
+          <div class="nav-logo">⚕</div>
+          <span class="nav-brand-text">MediChain HMS</span>
+        </div>
+        <p class="footer-brand-text">AI + Hyperledger Fabric + IPFS architecture making Hospital Management Systems smarter, faster, and more accurate.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Modules</div>
+        <ul class="footer-links">
+          <li><a href="#">Doctor Dashboard</a></li>
+          <li><a href="#">Patient Portal</a></li>
+          <li><a href="#">Emergency Center</a></li>
+          <li><a href="#">Pharmacy</a></li>
+          <li><a href="#">Billing & Insurance</a></li>
+          <li><a href="#">Audit & Compliance</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Technology</div>
+        <ul class="footer-links">
+          <li><a href="#">Hyperledger Fabric</a></li>
+          <li><a href="#">IPFS Storage</a></li>
+          <li><a href="#">AI Service Layer</a></li>
+          <li><a href="#">REST & GraphQL API</a></li>
+          <li><a href="#">Smart Contracts</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">Security</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 MediChain HMS. AI makes healthcare smarter, faster & more accurate.</div>
+      <div class="footer-hash">Latest Block: 0x3f9a...c2b1e · Network: Active · Peers: 12</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── ANIMATED NETWORK CANVAS ──
+const canvas = document.getElementById('networkCanvas');
+const ctx = canvas.getContext('2d');
+let nodes = [];
+let W, H;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Node {
+  constructor() {
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.vx = (Math.random() - 0.5) * 0.3;
+    this.vy = (Math.random() - 0.5) * 0.3;
+    this.r = Math.random() * 2 + 1;
+    this.pulse = Math.random() * Math.PI * 2;
+  }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.pulse += 0.02;
+    if (this.x < 0 || this.x > W) this.vx *= -1;
+    if (this.y < 0 || this.y > H) this.vy *= -1;
+  }
+  draw() {
+    const a = 0.3 + 0.2 * Math.sin(this.pulse);
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0,212,255,${a})`;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < 60; i++) nodes.push(new Node());
+
+function drawConnections() {
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const dx = nodes[i].x - nodes[j].x;
+      const dy = nodes[i].y - nodes[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 150) {
+        const alpha = (1 - dist/150) * 0.15;
+        ctx.beginPath();
+        ctx.moveTo(nodes[i].x, nodes[i].y);
+        ctx.lineTo(nodes[j].x, nodes[j].y);
+        ctx.strokeStyle = `rgba(0,212,255,${alpha})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate() {
+  ctx.clearRect(0, 0, W, H);
+  drawConnections();
+  nodes.forEach(n => { n.update(); n.draw(); });
+  requestAnimationFrame(animate);
+}
+animate();
+
+// ── COUNTER ANIMATION ──
+function animateCounters() {
+  const vals = [
+    { el: document.querySelectorAll('.hero-stat-val')[0], end: 98, suffix: '%' },
+    { el: document.querySelectorAll('.hero-stat-val')[1], end: 92, suffix: '%' },
+    { el: document.querySelectorAll('.hero-stat-val')[2], end: 18, suffix: '%' },
+  ];
+  vals.forEach(({ el, end, suffix }) => {
+    if (!el) return;
+    let current = 0;
+    const step = end / 50;
+    const timer = setInterval(() => {
+      current = Math.min(current + step, end);
+      el.textContent = Math.round(current) + suffix;
+      if (current >= end) clearInterval(timer);
+    }, 30);
+  });
+}
+setTimeout(animateCounters, 400);
+
+// ── TAB CLICK (mockup interaction) ──
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    const tabs = this.closest('.tabs').querySelectorAll('.tab');
+    tabs.forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

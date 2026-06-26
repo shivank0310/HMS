@@ -73,7 +73,7 @@ function checkPrereqs() {
   # use the fabric peer container to see if the samples and binaries match your
   # docker images
   LOCAL_VERSION=$(peer version | sed -ne 's/^ Version: //p')
-  DOCKER_IMAGE_VERSION=$(${CONTAINER_CLI} run --rm hyperledger/fabric-peer:latest peer version | sed -ne 's/^ Version: //p')
+  DOCKER_IMAGE_VERSION=$(${CONTAINER_CLI} run --rm hyperledger/fabric-peer:${IMAGETAG} peer version | sed -ne 's/^ Version: //p')
 
   infoln "LOCAL_VERSION=$LOCAL_VERSION"
   infoln "DOCKER_IMAGE_VERSION=$DOCKER_IMAGE_VERSION"
@@ -119,7 +119,7 @@ function checkPrereqs() {
       exit 1
     fi
     CA_LOCAL_VERSION=$(fabric-ca-client version | sed -ne 's/ Version: //p')
-    CA_DOCKER_IMAGE_VERSION=$(${CONTAINER_CLI} run --rm hyperledger/fabric-ca:latest fabric-ca-client version | sed -ne 's/ Version: //p' | head -1)
+    CA_DOCKER_IMAGE_VERSION=$(${CONTAINER_CLI} run --rm hyperledger/fabric-ca:${CA_IMAGETAG} fabric-ca-client version | sed -ne 's/ Version: //p' | head -1)
     infoln "CA_LOCAL_VERSION=$CA_LOCAL_VERSION"
     infoln "CA_DOCKER_IMAGE_VERSION=$CA_DOCKER_IMAGE_VERSION"
 
@@ -154,9 +154,6 @@ function checkPrereqs() {
 # "organizations/ordererOrganizations" directory.
 
 # Create Organization crypto material using cryptogen or CAs
-function createOrgs() {
-
-  ```bash
 function createOrgs() {
   if [ -d "organizations/peerOrganizations" ]; then
     rm -Rf organizations/peerOrganizations
@@ -371,7 +368,6 @@ function createOrgs() {
   infoln "Generating CCP files"
   ./organizations/ccp-generate.sh
 }
-```
 
   # if [ -d "organizations/peerOrganizations" ]; then
   #   rm -Rf organizations/peerOrganizations && rm -Rf organizations/ordererOrganizations
@@ -484,8 +480,6 @@ function createOrgs() {
 
   # infoln "Generating CCP files for Org1 and Org2"
   # ./organizations/ccp-generate.sh
-}
-
 # Once you create the organization crypto material, you need to create the
 # genesis block of the application channel.
 
@@ -676,7 +670,15 @@ function networkDown() {
   # Don't remove the generated artifacts -- note, the ledgers are always removed
   if [ "$MODE" != "restart" ]; then
     # Bring down the network, deleting the volumes
-    ${CONTAINER_CLI} volume rm docker_orderer.example.com docker_peer0.org1.example.com docker_peer0.org2.example.com
+    ${CONTAINER_CLI} volume rm \
+      docker_orderer.example.com \
+      docker_peer0.hospitaladmin.example.com \
+      docker_peer0.clinicalstaff.example.com \
+      docker_peer0.diagnosticstaff.example.com \
+      docker_peer0.pharmacy.example.com \
+      docker_peer0.insurance.example.com \
+      docker_peer0.patientaccess.example.com \
+      docker_peer0.org3.example.com
     #Cleanup the chaincode containers
     clearContainers
     #Cleanup images
@@ -684,8 +686,12 @@ function networkDown() {
     # remove orderer block and other channel configuration transactions and certs
     ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf system-genesis-block/*.block organizations/peerOrganizations organizations/ordererOrganizations'
     ## remove fabric ca artifacts
-    ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/org1/msp organizations/fabric-ca/org1/tls-cert.pem organizations/fabric-ca/org1/ca-cert.pem organizations/fabric-ca/org1/IssuerPublicKey organizations/fabric-ca/org1/IssuerRevocationPublicKey organizations/fabric-ca/org1/fabric-ca-server.db'
-    ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/org2/msp organizations/fabric-ca/org2/tls-cert.pem organizations/fabric-ca/org2/ca-cert.pem organizations/fabric-ca/org2/IssuerPublicKey organizations/fabric-ca/org2/IssuerRevocationPublicKey organizations/fabric-ca/org2/fabric-ca-server.db'
+    ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/hospitaladmin/msp organizations/fabric-ca/hospitaladmin/tls-cert.pem organizations/fabric-ca/hospitaladmin/ca-cert.pem organizations/fabric-ca/hospitaladmin/IssuerPublicKey organizations/fabric-ca/hospitaladmin/IssuerRevocationPublicKey organizations/fabric-ca/hospitaladmin/fabric-ca-server.db'
+    ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/clinicalstaff/msp organizations/fabric-ca/clinicalstaff/tls-cert.pem organizations/fabric-ca/clinicalstaff/ca-cert.pem organizations/fabric-ca/clinicalstaff/IssuerPublicKey organizations/fabric-ca/clinicalstaff/IssuerRevocationPublicKey organizations/fabric-ca/clinicalstaff/fabric-ca-server.db'
+    ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/diagnosticstaff/msp organizations/fabric-ca/diagnosticstaff/tls-cert.pem organizations/fabric-ca/diagnosticstaff/ca-cert.pem organizations/fabric-ca/diagnosticstaff/IssuerPublicKey organizations/fabric-ca/diagnosticstaff/IssuerRevocationPublicKey organizations/fabric-ca/diagnosticstaff/fabric-ca-server.db'
+    ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/pharmacy/msp organizations/fabric-ca/pharmacy/tls-cert.pem organizations/fabric-ca/pharmacy/ca-cert.pem organizations/fabric-ca/pharmacy/IssuerPublicKey organizations/fabric-ca/pharmacy/IssuerRevocationPublicKey organizations/fabric-ca/pharmacy/fabric-ca-server.db'
+    ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/insurance/msp organizations/fabric-ca/insurance/tls-cert.pem organizations/fabric-ca/insurance/ca-cert.pem organizations/fabric-ca/insurance/IssuerPublicKey organizations/fabric-ca/insurance/IssuerRevocationPublicKey organizations/fabric-ca/insurance/fabric-ca-server.db'
+    ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/patientaccess/msp organizations/fabric-ca/patientaccess/tls-cert.pem organizations/fabric-ca/patientaccess/ca-cert.pem organizations/fabric-ca/patientaccess/IssuerPublicKey organizations/fabric-ca/patientaccess/IssuerRevocationPublicKey organizations/fabric-ca/patientaccess/fabric-ca-server.db'
     ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/ordererOrg/msp organizations/fabric-ca/ordererOrg/tls-cert.pem organizations/fabric-ca/ordererOrg/ca-cert.pem organizations/fabric-ca/ordererOrg/IssuerPublicKey organizations/fabric-ca/ordererOrg/IssuerRevocationPublicKey organizations/fabric-ca/ordererOrg/fabric-ca-server.db'
     ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf addOrg3/fabric-ca/org3/msp addOrg3/fabric-ca/org3/tls-cert.pem addOrg3/fabric-ca/org3/ca-cert.pem addOrg3/fabric-ca/org3/IssuerPublicKey addOrg3/fabric-ca/org3/IssuerRevocationPublicKey addOrg3/fabric-ca/org3/fabric-ca-server.db'
     # remove channel and script artifacts
@@ -694,6 +700,8 @@ function networkDown() {
 }
 
 . ./network.config
+export IMAGETAG
+export CA_IMAGETAG
 
 # use this as the default docker-compose yaml definition
 COMPOSE_FILE_BASE=compose-test-net.yaml
@@ -871,10 +879,10 @@ if [ "$MODE" == "prereq" ]; then
 elif [ "$MODE" == "up" ]; then
   infoln "Starting nodes with CLI timeout of '${MAX_RETRY}' tries and CLI delay of '${CLI_DELAY}' seconds and using database '${DATABASE}' ${CRYPTO_MODE}"
   networkUp
-elif [ "$MODE" == "createChannel" ]; then
-  infoln "Creating channel '${CHANNEL_NAME}'."
-  infoln "If network is not up, starting nodes with CLI timeout of '${MAX_RETRY}' tries and CLI delay of '${CLI_DELAY}' seconds and using database '${DATABASE} ${CRYPTO_MODE}"
-  createChannel $BFT
+  elif [ "$MODE" == "createChannel" ]; then
+    infoln "Creating channel '${CHANNEL_NAME}'."
+    infoln "If network is not up, starting nodes with CLI timeout of '${MAX_RETRY}' tries and CLI delay of '${CLI_DELAY}' seconds and using database '${DATABASE}' ${CRYPTO_MODE}"
+    createChannel $BFT
 elif [ "$MODE" == "down" ]; then
   infoln "Stopping network"
   networkDown

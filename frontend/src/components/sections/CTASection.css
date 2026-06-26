@@ -1,0 +1,55 @@
+.cta-section {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.08), rgba(124, 92, 252, 0.08));
+  border-top: 1px solid var(--navy-border);
+}
+
+.cta-container {
+  text-align: center;
+  padding: 5rem 2rem;
+}
+
+.cta-container .section-desc {
+  margin: 0 auto 2rem;
+}
+
+.cta-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cta-section .btn-hero {
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cta-section .btn-hero-primary {
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  border: none;
+  color: var(--navy);
+}
+
+.cta-section .btn-hero-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 212, 255, 0.4);
+}
+
+.cta-section .btn-hero-outline {
+  background: none;
+  border: 1px solid var(--navy-border);
+  color: var(--white);
+}
+
+.cta-section .btn-hero-outline:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}

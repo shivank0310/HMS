@@ -1,0 +1,114 @@
+.patient-info {
+  margin-bottom: 1rem;
+}
+
+.patient-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.patient-id {
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.symptoms-box {
+  background: var(--navy);
+  border: 1px solid var(--navy-border);
+  border-radius: 8px;
+  padding: 0.7rem;
+  margin-bottom: 1rem;
+  font-size: 0.77rem;
+  color: var(--text);
+}
+
+.symptoms-label {
+  font-size: 0.65rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.diagnoses-label {
+  font-size: 0.72rem;
+  color: var(--cyan);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.diagnoses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 1rem;
+}
+
+.diagnosis-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--navy);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.diag-name {
+  font-size: 0.78rem;
+  color: var(--white);
+  font-weight: 500;
+}
+
+.confidence-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.confidence-bar {
+  width: 60px;
+  height: 4px;
+  background: var(--navy-border);
+  border-radius: 2px;
+}
+
+.confidence-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--cyan);
+}
+
+.confidence-pct {
+  font-size: 0.7rem;
+  color: var(--cyan);
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.ai-insight-box {
+  background: var(--purple-dim);
+  border: 1px solid rgba(124, 92, 252, 0.25);
+  border-radius: 10px;
+  padding: 0.9rem;
+  margin-top: 0.8rem;
+}
+
+.ai-insight-label {
+  font-size: 0.65rem;
+  color: var(--purple);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+
+.ai-insight-text {
+  font-size: 0.77rem;
+  color: var(--text);
+  line-height: 1.5;
+}
