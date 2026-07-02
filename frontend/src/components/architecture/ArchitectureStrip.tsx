@@ -3,7 +3,7 @@ import './ArchitectureStrip.css';
 
 export default function ArchitectureStrip() {
   return (
-    <div className="architecture-strip">
+    <div className="architecture-strip" id="architecture">
       <div className="container">
         <div className="architecture-strip-inner">
           {architectureItems.map((item, index) => (

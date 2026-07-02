@@ -1,0 +1,124 @@
+.dashboard-shell {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+}
+
+.dashboard-role-flag {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.3rem;
+  flex-wrap: wrap;
+}
+
+.dashboard-role-subtitle {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.dashboard-api-state {
+  margin-left: auto;
+  border: 1px solid rgba(0, 245, 160, 0.28);
+  border-radius: 999px;
+  padding: 0.4rem 0.75rem;
+  color: var(--green);
+  background: rgba(0, 245, 160, 0.08);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.dashboard-api-state.is-loading {
+  border-color: rgba(245, 184, 0, 0.34);
+  color: var(--amber);
+  background: rgba(245, 184, 0, 0.08);
+}
+
+.dashboard-api-state.is-error {
+  border-color: rgba(255, 77, 109, 0.34);
+  color: var(--red);
+  background: rgba(255, 77, 109, 0.08);
+}
+
+.dashboard-tab {
+  animation: fadeIn 0.24s ease both;
+  width: 100%;
+  min-width: 0;
+}
+
+.tab-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.chart-box {
+  height: 180px;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.07), rgba(124, 92, 252, 0.07));
+  border-radius: 10px;
+  display: flex;
+  align-items: flex-end;
+  padding: 1.5rem 1rem 1rem;
+  gap: 0.4rem;
+  overflow: hidden;
+}
+
+.bar {
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, var(--cyan), var(--purple));
+  opacity: 0.7;
+  flex: 1;
+  transition: opacity 0.2s;
+}
+
+.bar:hover {
+  opacity: 1;
+}
+
+.metric-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.metric-summary-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.metric-summary-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.metric-summary-green {
+  color: var(--green);
+}
+
+.metric-summary-amber {
+  color: var(--amber);
+}
+
+.metric-summary-cyan {
+  color: var(--cyan);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

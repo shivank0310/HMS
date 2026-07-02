@@ -1,0 +1,113 @@
+.blockchain-status {
+  margin-bottom: 1.25rem;
+  border: 1px solid rgba(0, 212, 255, 0.18);
+  background:
+    radial-gradient(circle at top left, rgba(0, 212, 255, 0.16), transparent 28rem),
+    linear-gradient(135deg, rgba(13, 28, 68, 0.92), rgba(17, 22, 58, 0.92));
+}
+
+.blockchain-status-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.blockchain-status-title {
+  color: var(--white);
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.blockchain-status-sub {
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.blockchain-status-pill {
+  border: 1px solid rgba(0, 245, 160, 0.32);
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  color: var(--green);
+  background: rgba(0, 245, 160, 0.08);
+  font-size: 0.72rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.blockchain-status-pill.is-loading {
+  border-color: rgba(245, 184, 0, 0.36);
+  color: var(--amber);
+  background: rgba(245, 184, 0, 0.08);
+}
+
+.blockchain-status-pill.is-error {
+  border-color: rgba(255, 77, 109, 0.36);
+  color: var(--red);
+  background: rgba(255, 77, 109, 0.08);
+}
+
+.blockchain-module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.85rem;
+}
+
+.blockchain-module {
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 0.85rem;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.blockchain-module-name {
+  color: var(--white);
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.blockchain-module-meta {
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.blockchain-module-counts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+
+.blockchain-module-counts span {
+  color: var(--muted);
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.blockchain-module-counts strong {
+  display: block;
+  margin-top: 0.12rem;
+  color: var(--cyan);
+  font-size: 1rem;
+}
+
+.blockchain-status-note {
+  margin-top: 0.9rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+@media (max-width: 700px) {
+  .blockchain-status-head {
+    flex-direction: column;
+  }
+}

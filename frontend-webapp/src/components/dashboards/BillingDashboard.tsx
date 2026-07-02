@@ -2,6 +2,10 @@ import Alert from '@/components/ui/Alert';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import MetricCard from '@/components/ui/MetricCard';
+import BlockchainStatus from '@/components/dashboards/BlockchainStatus';
+import { chainSyncedValue, metricValue } from '@/components/dashboards/dashboardMetrics';
+import type { DashboardComponentProps } from '@/types';
+import './BillingDashboard.css';
 
 const billingRows = [
   {
@@ -27,23 +31,41 @@ const billingRows = [
   },
 ];
 
-export default function BillingDashboard() {
-  return (
-    <>
-      <div className="grid-4">
-        <MetricCard icon="📦" tone="cyan" label="Total Medicines" value="1,842" note="12 items low stock" />
-        <MetricCard icon="💰" tone="green" label="Today's Pharmacy Sales" value="₹1.2M" note="↑ 8% growth" />
-        <MetricCard icon="⚠️" tone="amber" label="Expiring Soon" value="8" note="Within 30 days" />
-        <MetricCard icon="📊" tone="purple" label="Avg Billing Time" value="3.2" note="min per invoice" />
-      </div>
+export default function BillingDashboard({ activeMenu, dashboardData, isLoading, error }: DashboardComponentProps) {
+  const isOverview = activeMenu === 'Overview';
+  const showMetrics = isOverview || activeMenu === 'Reports';
+  const showAlerts = isOverview || activeMenu === 'Inventory' || activeMenu === 'Patient Billing' || activeMenu === 'Cost Optimisation';
+  const showInventory = isOverview || activeMenu === 'Inventory';
+  const showBilling = isOverview || activeMenu === 'Patient Billing';
+  const showCost = isOverview || activeMenu === 'Cost Optimisation';
+  const showReports = isOverview || activeMenu === 'Reports';
 
+  return (
+    <div className="dashboard-tab billing-dashboard">
+      <div className="tab-heading">
+        <span>{activeMenu}</span>
+      </div>
+      <BlockchainStatus data={dashboardData} isLoading={isLoading} error={error} />
+      {showMetrics ? (
+      <div className="grid-4">
+        <MetricCard icon="📦" tone="cyan" label="Total Medicines" value={metricValue(dashboardData, 'inventory', '1,842')} note="Inventory API records" />
+        <MetricCard icon="💊" tone="green" label="Dispenses" value={metricValue(dashboardData, 'dispenses', 120)} note="Synced through pharmacycc" />
+        <MetricCard icon="⚠️" tone="amber" label="Expiring Soon" value={metricValue(dashboardData, 'expiringSoon', 8)} note="Within 30 days" />
+        <MetricCard icon="⛓️" tone="purple" label="Chain Synced" value={chainSyncedValue(dashboardData)} note="Pharmacy and billing ledger records" />
+      </div>
+      ) : null}
+
+      {showAlerts ? (
       <div className="mt2">
         <Alert tone="danger">🔴 <strong>Critical:</strong> INV-2026-5847 expired. Auto follow-up initiated.</Alert>
         <Alert tone="warning">⚠️ <strong>Approval:</strong> 5 invoices pending admin sign-off.</Alert>
         <Alert tone="info">ℹ️ <strong>AI Tip:</strong> Generic substitution could save ₹85K this month.</Alert>
       </div>
+      ) : null}
 
+      {(showInventory || showBilling) ? (
       <div className="grid-2 mt3">
+        {showInventory ? (
         <div className="card">
           <div className="card-title">📦 Medicine Inventory</div>
           <div className="card-sub">Current stock with AI reorder predictions</div>
@@ -92,7 +114,9 @@ export default function BillingDashboard() {
             </table>
           </div>
         </div>
+        ) : null}
 
+        {showBilling ? (
         <div className="card">
           <div className="card-title">💳 Patient Billing Records</div>
           <div className="card-sub">Today's invoices and payment status</div>
@@ -121,9 +145,13 @@ export default function BillingDashboard() {
           </table>
         </div>
         </div>
+        ) : null}
       </div>
+      ) : null}
 
+      {(showCost || showReports) ? (
       <div className="grid-2 mt3">
+        {showCost ? (
         <div className="card">
           <div className="card-title">💡 AI Cost Optimisation</div>
           <div className="card-sub">Savings recommendations</div>
@@ -152,7 +180,9 @@ export default function BillingDashboard() {
             </div>
             <Button block>View All Recommendations</Button>
           </div>
+        ) : null}
 
+        {showReports ? (
         <div className="card">
           <div className="card-title">📊 Monthly Financial Summary</div>
           <div className="card-sub">Revenue, costs, and profit</div>
@@ -175,7 +205,9 @@ export default function BillingDashboard() {
             </div>
           </div>
         </div>
+        ) : null}
       </div>
-    </>
+      ) : null}
+    </div>
   );
 }

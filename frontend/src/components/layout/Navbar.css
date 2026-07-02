@@ -80,6 +80,7 @@
   cursor: pointer;
   transition: all 0.2s;
   font-family: inherit;
+  text-decoration: none;
 }
 
 .btn-ghost:hover {
@@ -98,6 +99,7 @@
   cursor: pointer;
   transition: opacity 0.2s;
   font-family: inherit;
+  text-decoration: none;
 }
 
 .btn-primary:hover {

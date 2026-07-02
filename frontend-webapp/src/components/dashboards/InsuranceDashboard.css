@@ -1,0 +1,51 @@
+.insurance-dashboard .tab-heading {
+  color: var(--cyan);
+}
+
+.fraud-grid {
+  margin-top: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.fraud-pill {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.8rem;
+  border-radius: 8px;
+}
+
+.fraud-pill span,
+.fraud-pill strong {
+  color: var(--white);
+}
+
+.fraud-danger {
+  background: var(--red-dim);
+  border-left: 3px solid var(--red);
+}
+
+.fraud-warning {
+  background: var(--amber-dim);
+  border-left: 3px solid var(--amber);
+}
+
+.fraud-success {
+  background: var(--green-dim);
+  border-left: 3px solid var(--green);
+}
+
+.fraud-info {
+  background: var(--cyan-dim);
+  border-left: 3px solid var(--cyan);
+}
+
+@media (max-width: 768px) {
+  .fraud-pill {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+}
+

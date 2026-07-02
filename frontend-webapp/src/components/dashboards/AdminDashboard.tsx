@@ -4,6 +4,10 @@ import Button from '@/components/ui/Button';
 import ItemRow from '@/components/ui/ItemRow';
 import MetricCard from '@/components/ui/MetricCard';
 import ProgressBar from '@/components/ui/ProgressBar';
+import BlockchainStatus from '@/components/dashboards/BlockchainStatus';
+import { chainSyncedValue, metricValue } from '@/components/dashboards/dashboardMetrics';
+import type { DashboardComponentProps } from '@/types';
+import './AdminDashboard.css';
 
 const staffRows = [
   {
@@ -40,22 +44,38 @@ const staffRows = [
   },
 ];
 
-export default function AdminDashboard() {
-  return (
-    <>
-      <div className="grid-4">
-        <MetricCard icon="🏥" tone="cyan" label="Total Patients Today" value="284" note="↑ 12% vs yesterday" />
-        <MetricCard icon="🛏️" tone="green" label="Bed Occupancy" value="78%" note="312 / 400 occupied" />
-        <MetricCard icon="👨‍⚕️" tone="amber" label="Staff On Duty" value="142" note="8 on leave today" />
-        <MetricCard icon="⚡" tone="red" label="Emergency Cases" value="7" note="2 in critical care" />
-      </div>
+export default function AdminDashboard({ activeMenu, dashboardData, isLoading, error }: DashboardComponentProps) {
+  const isOverview = activeMenu === 'Operations Overview';
+  const showMetrics = isOverview || activeMenu === 'Bed Management' || activeMenu === 'Staff Management';
+  const showAlerts = isOverview || activeMenu === 'Bed Management' || activeMenu === 'Staff Management' || activeMenu === 'Compliance';
+  const showBeds = isOverview || activeMenu === 'Bed Management' || activeMenu === 'Financials';
+  const showStaff = isOverview || activeMenu === 'Staff Management';
+  const showCompliance = isOverview || activeMenu === 'Compliance';
 
+  return (
+    <div className="dashboard-tab admin-dashboard">
+      <div className="tab-heading">
+        <span>{activeMenu}</span>
+      </div>
+      <BlockchainStatus data={dashboardData} isLoading={isLoading} error={error} />
+      {showMetrics ? (
+      <div className="grid-4">
+        <MetricCard icon="🏥" tone="cyan" label="Total Patients" value={metricValue(dashboardData, 'patients', 284)} note="From patient API + Fabric patientcc" />
+        <MetricCard icon="🧾" tone="green" label="Pending Bills" value={metricValue(dashboardData, 'pendingBills', 24)} note="Billing records ready for review" />
+        <MetricCard icon="👨‍⚕️" tone="amber" label="Doctors Registered" value={metricValue(dashboardData, 'doctors', 142)} note="Clinical staff directory" />
+        <MetricCard icon="⛓️" tone="red" label="Chain Synced" value={chainSyncedValue(dashboardData)} note="Records with synced blockchain metadata" />
+      </div>
+      ) : null}
+
+      {showAlerts ? (
       <div className="mt2">
         <Alert tone="danger">🔴 <strong>Critical:</strong> ICU at 95% capacity - 2 beds remaining. Overflow protocol may be needed.</Alert>
         <Alert tone="warning">⚠️ <strong>Staffing:</strong> Night shift short by 3 nurses in Ward B. Please reassign from Ward D.</Alert>
         <Alert tone="info">ℹ️ <strong>Audit:</strong> Monthly compliance report due by June 30. 4 departments pending sign-off.</Alert>
       </div>
+      ) : null}
 
+      {showBeds ? (
       <div className="grid-2 mt3">
         <div className="card">
           <div className="card-title">🏢 Department Occupancy</div>
@@ -91,7 +111,9 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+      ) : null}
 
+      {showStaff ? (
       <div className="card mt3">
         <div className="card-title">👩‍⚕️ Staff Overview</div>
         <div className="card-sub">Current duty rosters and performance</div>
@@ -122,7 +144,9 @@ export default function AdminDashboard() {
           </table>
         </div>
       </div>
+      ) : null}
 
+      {showCompliance ? (
       <div className="grid-3 mt3">
         <div className="card">
           <div className="card-title">📋 Compliance Status</div>
@@ -150,6 +174,7 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-    </>
+      ) : null}
+    </div>
   );
 }

@@ -1,0 +1,8 @@
+.doctor-dashboard .tab-heading {
+  color: var(--cyan);
+}
+
+.doctor-dashboard .chart-box {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.08), rgba(0, 229, 160, 0.06));
+}
+

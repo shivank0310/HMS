@@ -1,0 +1,31 @@
+.admin-dashboard .tab-heading {
+  color: var(--amber);
+}
+
+.metric-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.metric-list > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.metric-list strong {
+  color: var(--white);
+}
+
+@media (max-width: 768px) {
+  .metric-list > div {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+}
+

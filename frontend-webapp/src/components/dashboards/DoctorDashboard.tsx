@@ -3,6 +3,10 @@ import Button from '@/components/ui/Button';
 import ItemRow from '@/components/ui/ItemRow';
 import MetricCard from '@/components/ui/MetricCard';
 import ProgressBar from '@/components/ui/ProgressBar';
+import BlockchainStatus from '@/components/dashboards/BlockchainStatus';
+import { chainSyncedValue, metricValue } from '@/components/dashboards/dashboardMetrics';
+import type { DashboardComponentProps } from '@/types';
+import './DoctorDashboard.css';
 
 const patientRows = [
   {
@@ -35,16 +39,29 @@ const patientRows = [
   },
 ];
 
-export default function DoctorDashboard() {
-  return (
-    <>
-      <div className="grid-4">
-        <MetricCard icon="👥" tone="cyan" label="Today's Patients" value="12" note="3 pending review" />
-        <MetricCard icon="✅" tone="green" label="Completed Consults" value="8" note="Avg 28 min each" />
-        <MetricCard icon="⚠️" tone="red" label="High Risk Alerts" value="2" note="Immediate action needed" />
-        <MetricCard icon="💊" tone="purple" label="Prescriptions Today" value="15" note="All AI-validated" />
-      </div>
+export default function DoctorDashboard({ activeMenu, dashboardData, isLoading, error }: DashboardComponentProps) {
+  const isOverview = activeMenu === 'Overview';
+  const showMetrics = isOverview || activeMenu === 'My Patients' || activeMenu === 'Performance';
+  const showClinicalPanels = isOverview || activeMenu === 'My Patients' || activeMenu === 'AI Insights';
+  const showPrescriptions = isOverview || activeMenu === 'Prescriptions';
+  const showPerformance = isOverview || activeMenu === 'AI Insights' || activeMenu === 'Performance';
 
+  return (
+    <div className="dashboard-tab doctor-dashboard">
+      <div className="tab-heading">
+        <span>{activeMenu}</span>
+      </div>
+      <BlockchainStatus data={dashboardData} isLoading={isLoading} error={error} />
+      {showMetrics ? (
+      <div className="grid-4">
+        <MetricCard icon="👥" tone="cyan" label="Patients" value={metricValue(dashboardData, 'patients', 12)} note="From patient records API" />
+        <MetricCard icon="✅" tone="green" label="Active Treatments" value={metricValue(dashboardData, 'activeTreatments', 8)} note="Synced through treatmentcc" />
+        <MetricCard icon="⚠️" tone="red" label="High Risk Alerts" value={metricValue(dashboardData, 'highRiskAlerts', 2)} note="Emergency access records" />
+        <MetricCard icon="⛓️" tone="purple" label="Chain Synced" value={chainSyncedValue(dashboardData)} note="Patient/treatment/pharmacy ledger writes" />
+      </div>
+      ) : null}
+
+      {showClinicalPanels ? (
       <div className="grid-2 mt3">
         <div className="card">
           <div className="card-title">🤖 AI Diagnosis Insights</div>
@@ -82,7 +99,9 @@ export default function DoctorDashboard() {
           <ItemRow title="Priya Mehta (P011)" subtitle="11:30 AM · Diabetes Review · Room 5" right={<Badge tone="info">SCHEDULED</Badge>} />
         </div>
       </div>
+      ) : null}
 
+      {showPrescriptions ? (
       <div className="card mt3">
         <div className="card-title">💊 Active Treatment Plans</div>
         <div className="card-sub">AI-validated prescriptions</div>
@@ -111,7 +130,9 @@ export default function DoctorDashboard() {
           </table>
         </div>
       </div>
+      ) : null}
 
+      {showPerformance ? (
       <div className="grid-2 mt3">
         <div className="card">
           <div className="card-title">📊 Weekly Patient Volume</div>
@@ -136,6 +157,7 @@ export default function DoctorDashboard() {
           </div>
         </div>
       </div>
-    </>
+      ) : null}
+    </div>
   );
 }

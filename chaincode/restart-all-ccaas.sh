@@ -44,6 +44,52 @@ peername_for_org() {
   esac
 }
 
+resolve_committed_package_id() {
+  local channel="$1"
+  local cc_name="$2"
+  local packages_file="${ROOT_DIR}/ccaas-packages.json"
+  if [[ -f "${packages_file}" ]]; then
+    local pinned
+    pinned=$(jq -r --arg cc "${cc_name}" '.[$cc] // empty' "${packages_file}")
+    if [[ -n "${pinned}" && "${pinned}" != "null" ]]; then
+      echo "${pinned}"
+      return 0
+    fi
+  fi
+
+  local label="${cc_name}_1.0"
+  local candidate
+  local candidates
+  candidates=$(peer lifecycle chaincode queryinstalled --output json 2>/dev/null \
+    | jq -r --arg cc_label "${label}" '[.installed_chaincodes[] | select(.label == $cc_label) | .package_id] | .[]')
+
+  for candidate in ${candidates}; do
+    docker rm -f "tmp_${cc_name}_ccaas" >/dev/null 2>&1 || true
+    docker run --rm -d \
+      --name "tmp_${cc_name}_ccaas" \
+      --network fabric_test \
+      -e CHAINCODE_SERVER_ADDRESS="0.0.0.0:9999" \
+      -e CHAINCODE_ID="${candidate}" \
+      -e CORE_CHAINCODE_ID_NAME="${candidate}" \
+      "${cc_name}_ccaas_image:latest" >/dev/null
+
+    sleep 2
+    if timeout 10 peer chaincode query -C "${channel}" -n "${cc_name}" -c '{"Args":["ListPatients"]}' >/dev/null 2>&1 \
+      || timeout 10 peer chaincode query -C "${channel}" -n "${cc_name}" -c '{"Args":["ListTreatments"]}' >/dev/null 2>&1 \
+      || timeout 10 peer chaincode query -C "${channel}" -n "${cc_name}" -c '{"Args":["ListBills"]}' >/dev/null 2>&1 \
+      || timeout 10 peer chaincode query -C "${channel}" -n "${cc_name}" -c '{"Args":["ListDispenses"]}' >/dev/null 2>&1 \
+      || timeout 10 peer chaincode query -C "${channel}" -n "${cc_name}" -c '{"Args":["ListEmergencies"]}' >/dev/null 2>&1 \
+      || timeout 10 peer chaincode query -C "${channel}" -n "${cc_name}" -c '{"Args":["ListAudits"]}' >/dev/null 2>&1; then
+      docker rm -f "tmp_${cc_name}_ccaas" >/dev/null 2>&1 || true
+      echo "${candidate}"
+      return 0
+    fi
+    docker rm -f "tmp_${cc_name}_ccaas" >/dev/null 2>&1 || true
+  done
+
+  return 1
+}
+
 for channel in patientchannel treatmentchannel billingchannel emergencychannel pharmacychannel auditchannel; do
   cc_name="${CHANNEL_CC[$channel]}"
   cc_path="${ROOT_DIR}/${channel}/chaincode-javascript"
@@ -54,11 +100,12 @@ for channel in patientchannel treatmentchannel billingchannel emergencychannel p
 
   package_id=""
   setGlobals 1
-  package_id=$(peer lifecycle chaincode queryinstalled --output json 2>/dev/null | jq -r --arg cc_label "${cc_name}_1.0" '.installed_chaincodes[] | select(.label == $cc_label) | .package_id' | head -1)
+  package_id=$(resolve_committed_package_id "${channel}" "${cc_name}") || true
   if [[ -z "${package_id}" ]]; then
-    echo "Skipping ${cc_name}; not committed on ${channel}"
+    echo "Skipping ${cc_name}; no working package id found for ${channel}"
     continue
   fi
+  echo "Using package ${package_id} for ${cc_name} on ${channel}"
 
   for org in ${orgs}; do
     peername="$(peername_for_org "${org}")"

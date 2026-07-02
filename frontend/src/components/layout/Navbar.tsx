@@ -1,4 +1,5 @@
 import { navLinks } from '@/data/navigation';
+import { websiteLoginUrl } from '@/utils/webapp';
 import './Navbar.css';
 
 export default function Navbar() {
@@ -17,12 +18,12 @@ export default function Navbar() {
       </ul>
       <div className="nav-right">
         <div className="live-dot" />
-        <button type="button" className="btn-ghost">
+        <a href={websiteLoginUrl} className="btn-ghost">
           Sign In
-        </button>
-        <button type="button" className="btn-primary">
+        </a>
+        <a href={websiteLoginUrl} className="btn-primary">
           Get Demo
-        </button>
+        </a>
       </div>
     </nav>
   );

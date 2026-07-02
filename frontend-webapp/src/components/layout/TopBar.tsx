@@ -2,9 +2,10 @@ interface TopBarProps {
   title: string;
   subtitle: string;
   search: string;
+  onOpenMenu: () => void;
 }
 
-export default function TopBar({ title, subtitle, search }: TopBarProps) {
+export default function TopBar({ title, subtitle, search, onOpenMenu }: TopBarProps) {
   const date = new Date().toLocaleDateString('en-IN', {
     weekday: 'short',
     day: 'numeric',
@@ -14,6 +15,9 @@ export default function TopBar({ title, subtitle, search }: TopBarProps) {
 
   return (
     <div className="top-bar" id="top">
+      <button className="mobile-menu-btn" type="button" aria-label="Open menu" onClick={onOpenMenu}>
+        ☰
+      </button>
       <div>
         <div className="top-bar-title">{title}</div>
         <div className="top-bar-subtitle">{subtitle}</div>

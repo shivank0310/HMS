@@ -3,6 +3,10 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import MetricCard from '@/components/ui/MetricCard';
 import ProgressBar from '@/components/ui/ProgressBar';
+import BlockchainStatus from '@/components/dashboards/BlockchainStatus';
+import { metricValue } from '@/components/dashboards/dashboardMetrics';
+import type { DashboardComponentProps } from '@/types';
+import './InsuranceDashboard.css';
 
 const claimRows = [
   {
@@ -52,21 +56,36 @@ const claimRows = [
   },
 ];
 
-export default function InsuranceDashboard() {
-  return (
-    <>
-      <div className="grid-4">
-        <MetricCard icon="📝" tone="cyan" label="Claims This Month" value="147" note="↑ 18% vs last month" />
-        <MetricCard icon="✅" tone="green" label="Approved Claims" value="98" note="₹8.4M total value" />
-        <MetricCard icon="⏳" tone="amber" label="Under Review" value="31" note="Avg 3.2 days pending" />
-        <MetricCard icon="❌" tone="red" label="Rejected Claims" value="18" note="12.2% rejection rate" />
-      </div>
+export default function InsuranceDashboard({ activeMenu, dashboardData, isLoading, error }: DashboardComponentProps) {
+  const isOverview = activeMenu === 'Claims Overview';
+  const showMetrics = isOverview || activeMenu === 'Analytics';
+  const showAlerts = isOverview || activeMenu === 'Fraud Detection' || activeMenu === 'Pre-Authorisations';
+  const showClaims = isOverview || activeMenu === 'Active Claims' || activeMenu === 'Pre-Authorisations';
+  const showAnalytics = isOverview || activeMenu === 'Fraud Detection' || activeMenu === 'Analytics';
 
+  return (
+    <div className="dashboard-tab insurance-dashboard">
+      <div className="tab-heading">
+        <span>{activeMenu}</span>
+      </div>
+      <BlockchainStatus data={dashboardData} isLoading={isLoading} error={error} />
+      {showMetrics ? (
+      <div className="grid-4">
+        <MetricCard icon="📝" tone="cyan" label="Claims" value={metricValue(dashboardData, 'claims', 147)} note="Claims API records" />
+        <MetricCard icon="✅" tone="green" label="Approved Claims" value={metricValue(dashboardData, 'approvedClaims', 98)} note="Ready for settlement" />
+        <MetricCard icon="⏳" tone="amber" label="Under Review" value={metricValue(dashboardData, 'pendingClaims', 31)} note="Submitted or review state" />
+        <MetricCard icon="🧾" tone="red" label="Pending Bills" value={metricValue(dashboardData, 'pendingBills', 18)} note="Billing ledger relation" />
+      </div>
+      ) : null}
+
+      {showAlerts ? (
       <div className="mt2">
         <Alert tone="warning">⚠️ <strong>Fraud Alert:</strong> AI flagged Claim CLM-2026-0892 for unusual billing pattern. Manual review required.</Alert>
         <Alert tone="info">ℹ️ <strong>Pre-auth:</strong> 5 pre-authorisation requests awaiting insurer response (TPA: Star Health, HDFC ERGO).</Alert>
       </div>
+      ) : null}
 
+      {showClaims ? (
       <div className="card mt3">
         <div className="card-title">📋 Recent Claims</div>
         <div className="card-sub">AI-processed with fraud detection scores</div>
@@ -99,7 +118,9 @@ export default function InsuranceDashboard() {
           </table>
         </div>
       </div>
+      ) : null}
 
+      {showAnalytics ? (
       <div className="grid-2 mt3">
         <div className="card">
           <div className="card-title">🏦 Payer Breakdown</div>
@@ -135,6 +156,7 @@ export default function InsuranceDashboard() {
           </div>
         </div>
       </div>
-    </>
+      ) : null}
+    </div>
   );
 }

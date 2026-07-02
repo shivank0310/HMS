@@ -1,0 +1,31 @@
+.patient-dashboard .tab-heading {
+  color: var(--green);
+}
+
+.mini-stats {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  font-size: 0.8rem;
+}
+
+.mini-stats > div {
+  text-align: center;
+}
+
+.mini-stat-value {
+  font-weight: 700;
+}
+
+.mini-stat-cyan {
+  color: var(--cyan);
+}
+
+.mini-stat-green {
+  color: var(--green);
+}
+
+.mini-stat-label {
+  color: var(--muted);
+}
+

@@ -1,3 +1,4 @@
+import { websiteLoginUrl } from '@/utils/webapp';
 import './CTASection.css';
 
 export default function CTASection() {
@@ -11,12 +12,12 @@ export default function CTASection() {
           efficient healthcare delivery.
         </p>
         <div className="cta-actions">
-          <button type="button" className="btn-hero btn-hero-primary">
-            ▶ Request a Demo
-          </button>
-          <button type="button" className="btn-hero btn-hero-outline">
-            📄 Read Documentation
-          </button>
+          <a href={websiteLoginUrl} className="btn-hero btn-hero-primary">
+            ▶ Open Role Login
+          </a>
+          <a href="#architecture" className="btn-hero btn-hero-outline">
+            📄 View Architecture
+          </a>
         </div>
       </div>
     </section>

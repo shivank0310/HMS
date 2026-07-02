@@ -3,6 +3,10 @@ import Button from '@/components/ui/Button';
 import ItemRow from '@/components/ui/ItemRow';
 import MetricCard from '@/components/ui/MetricCard';
 import ProgressBar from '@/components/ui/ProgressBar';
+import BlockchainStatus from '@/components/dashboards/BlockchainStatus';
+import { chainSyncedValue, metricValue } from '@/components/dashboards/dashboardMetrics';
+import type { DashboardComponentProps } from '@/types';
+import './PatientDashboard.css';
 
 const medicationRows = [
   {
@@ -28,16 +32,30 @@ const medicationRows = [
   },
 ];
 
-export default function PatientDashboard() {
-  return (
-    <>
-      <div className="grid-4">
-        <MetricCard icon="❤️" tone="cyan" label="Heart Rate" value="78" note="bpm · Normal" />
-        <MetricCard icon="🩺" tone="green" label="Blood Pressure" value="118/76" note="Optimal range" />
-        <MetricCard icon="📅" tone="amber" label="Next Appointment" value="Jun 24" note="Dr. Rajesh Kumar" />
-        <MetricCard icon="💊" tone="purple" label="Active Medications" value="3" note="All on schedule" />
-      </div>
+export default function PatientDashboard({ activeMenu, dashboardData, isLoading, error }: DashboardComponentProps) {
+  const isOverview = activeMenu === 'Health Overview';
+  const showMetrics = isOverview || activeMenu === 'Health Goals';
+  const showAppointments = isOverview || activeMenu === 'Appointments';
+  const showMedications = isOverview || activeMenu === 'Medications';
+  const showRecords = isOverview || activeMenu === 'Medical Records';
+  const showGoals = isOverview || activeMenu === 'Health Goals';
 
+  return (
+    <div className="dashboard-tab patient-dashboard">
+      <div className="tab-heading">
+        <span>{activeMenu}</span>
+      </div>
+      <BlockchainStatus data={dashboardData} isLoading={isLoading} error={error} />
+      {showMetrics ? (
+      <div className="grid-4">
+        <MetricCard icon="👤" tone="cyan" label="Patient Profile" value={metricValue(dashboardData, 'patientName', 'Patient')} note="Secured by PatientAccessMSP" />
+        <MetricCard icon="📅" tone="green" label="Appointments" value={metricValue(dashboardData, 'appointments', 3)} note="Visits from appointment API" />
+        <MetricCard icon="🩺" tone="amber" label="Active Treatments" value={metricValue(dashboardData, 'activeTreatments', 1)} note="Treatment ledger summary" />
+        <MetricCard icon="⛓️" tone="purple" label="Chain Synced" value={chainSyncedValue(dashboardData)} note="Your blockchain-backed records" />
+      </div>
+      ) : null}
+
+      {(isOverview || showAppointments) ? (
       <div className="grid-2 mt3">
         <div className="card">
           <div className="card-title">📈 Vitals This Month</div>
@@ -83,7 +101,9 @@ export default function PatientDashboard() {
           <Button block>Book New Appointment</Button>
         </div>
       </div>
+      ) : null}
 
+      {showMedications ? (
       <div className="card mt3">
         <div className="card-title">💊 Current Medications</div>
         <div className="card-sub">Active prescriptions with dosage schedule</div>
@@ -112,8 +132,11 @@ export default function PatientDashboard() {
           </table>
         </div>
       </div>
+      ) : null}
 
+      {(showRecords || showGoals) ? (
       <div className="grid-2 mt3">
+        {showRecords ? (
         <div className="card">
           <div className="card-title">📄 Medical Records</div>
           <div className="card-sub">Your health documents</div>
@@ -121,7 +144,9 @@ export default function PatientDashboard() {
           <ItemRow title="📊 Prescription History" subtitle="All past medications" right={<Button variant="secondary" size="sm">View</Button>} />
           <ItemRow title="🫀 ECG Report - June 1" subtitle="Cardiology · PDF" right={<Button variant="secondary" size="sm">Download</Button>} />
         </div>
+        ) : null}
 
+        {showGoals ? (
         <div className="card">
           <div className="card-title">🎯 Health Goals</div>
           <div className="card-sub">Your wellness progress</div>
@@ -132,7 +157,9 @@ export default function PatientDashboard() {
             <ProgressBar label="Medication Adherence" value="95%" percent={95} gradient="linear-gradient(90deg,var(--purple),var(--cyan))" />
           </div>
         </div>
+        ) : null}
       </div>
-    </>
+      ) : null}
+    </div>
   );
 }

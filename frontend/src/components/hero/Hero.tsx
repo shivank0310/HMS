@@ -1,5 +1,6 @@
 import { heroStats } from '@/data/navigation';
 import { scrollToSection, useCounterAnimation } from '@/hooks/useCounterAnimation';
+import { websiteLoginUrl } from '@/utils/webapp';
 import NetworkCanvas from './NetworkCanvas';
 import BlockchainVisual from './BlockchainVisual';
 import './Hero.css';
@@ -43,13 +44,12 @@ export default function Hero() {
             >
               ▶ Explore Dashboards
             </button>
-            <button
-              type="button"
+            <a
+              href={websiteLoginUrl}
               className="btn-hero btn-hero-outline"
-              onClick={() => scrollToSection('blockchain')}
             >
-              🔗 View Blockchain
-            </button>
+              🔐 Open Login
+            </a>
           </div>
           <div className="hero-stats">
             {heroStats.map((stat) => (

@@ -1,0 +1,56 @@
+.billing-dashboard .tab-heading {
+  color: var(--green);
+}
+
+.cost-list {
+  margin-top: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.cost-card {
+  padding: 1rem;
+  border-radius: 10px;
+}
+
+.cost-card p {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.cost-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 4px;
+}
+
+.cost-head span,
+.cost-head strong {
+  color: var(--white);
+}
+
+.cost-green {
+  background: rgba(0, 229, 160, 0.08);
+  border-left: 3px solid var(--green);
+}
+
+.cost-cyan {
+  background: rgba(0, 212, 255, 0.08);
+  border-left: 3px solid var(--cyan);
+}
+
+.cost-amber {
+  background: rgba(255, 181, 71, 0.08);
+  border-left: 3px solid var(--amber);
+}
+
+@media (max-width: 768px) {
+  .cost-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+}
+
