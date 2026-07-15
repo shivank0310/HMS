@@ -70,4 +70,7 @@ export interface DashboardComponentProps {
   dashboardData?: DashboardApiData | null;
   isLoading?: boolean;
   error?: string;
+  accessToken?: string;
+  patientId?: string;
+  onSelectMenu?: (label: string) => void;
 }

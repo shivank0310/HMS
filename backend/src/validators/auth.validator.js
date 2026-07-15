@@ -11,6 +11,9 @@ const register = Joi.object({
   fullName: Joi.string().required(),
   role: Joi.string().optional(),
   phone: Joi.string().optional(),
+  department: Joi.string().optional(),
+  specialization: Joi.string().optional(),
+  licenseNumber: Joi.string().optional(),
 });
 
 const changePassword = Joi.object({

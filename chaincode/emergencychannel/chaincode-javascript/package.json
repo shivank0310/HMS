@@ -1,7 +1,7 @@
 {
   "name": "medichain-emergency-chaincode",
   "version": "1.0.0",
-  "description": "MediChain emergency channel chaincode with dynamic fields",
+  "description": "MediChain emergency channel chaincode",
   "main": "index.js",
   "engines": {
     "node": ">=18"

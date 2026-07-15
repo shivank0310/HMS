@@ -3,6 +3,7 @@ const treatmentRepo = require('../repositories/treatment.repository');
 const diagnosisRepo = require('../repositories/diagnosis.repository');
 const pharmacyRepo = require('../repositories/pharmacy.repository');
 const { documentRepo, sharedRecordRepo } = require('../repositories/misc.repository');
+const auditService = require('./audit.service');
 const syncService = require('../blockchain/syncService');
 const { generateId } = require('../utils/id');
 const ApiError = require('../utils/ApiError');
@@ -28,6 +29,18 @@ async function createPatient(data, mspId = 'HospitalAdminMSP') {
 
   const sync = await syncService.syncToChain('patient', mspId, record);
   const saved = await patientRepo.insert({ ...record, blockchain: sync.blockchain });
+  await auditService.log({
+    userId: record.userId || null,
+    mspId,
+    action: 'patient.created',
+    resource: 'patient',
+    resourceId: saved.id,
+    metadata: {
+      fullName: saved.fullName,
+      mrn: saved.mrn,
+      blockchainSynced: !!sync.success,
+    },
+  });
   return saved;
 }
 
@@ -36,7 +49,7 @@ async function listPatients() {
 }
 
 async function getPatient(id) {
-  const patient = await patientRepo.findById(id);
+  const patient = await patientRepo.findById(id) || await patientRepo.findOne({ userId: id });
   if (!patient) throw new ApiError('Patient not found', 404);
   return patient;
 }
@@ -57,7 +70,7 @@ async function updatePatient(id, data, mspId) {
   };
 
   const sync = await syncService.syncToChain('patient', mspId || 'HospitalAdminMSP', updated, 'update');
-  return patientRepo.update(id, {
+  const saved = await patientRepo.update(existing.id, {
     fullName: updated.fullName,
     dateOfBirth: updated.dateOfBirth,
     gender: updated.gender,
@@ -69,31 +82,50 @@ async function updatePatient(id, data, mspId) {
     metadata: updated.metadata,
     blockchain: sync.blockchain,
   });
+  await auditService.log({
+    userId: existing.userId || null,
+    mspId: mspId || 'HospitalAdminMSP',
+    action: 'patient.updated',
+    resource: 'patient',
+    resourceId: existing.id,
+    metadata: {
+      fullName: saved.fullName,
+      blockchainSynced: !!sync.success,
+    },
+  });
+  return saved;
 }
 
 async function deletePatient(id, mspId) {
-  await getPatient(id);
-  await patientRepo.delete(id);
+  const existing = await getPatient(id);
+  await patientRepo.delete(existing.id);
   try {
     const contract = await require('../blockchain/fabricGateway').getContract('patientchannel', 'patientcc', mspId || 'HospitalAdminMSP');
-    await contract.submitTransaction('DeletePatient', id);
+    await contract.submitTransaction('DeletePatient', existing.id);
   } catch {
     // non-blocking
   }
+  await auditService.log({
+    userId: existing.userId || null,
+    mspId: mspId || 'HospitalAdminMSP',
+    action: 'patient.deleted',
+    resource: 'patient',
+    resourceId: existing.id,
+  });
 }
 
 async function getMedicalHistory(patientId) {
-  await getPatient(patientId);
+  const patient = await getPatient(patientId);
   const [treatments, diagnoses, prescriptions] = await Promise.all([
-    treatmentRepo.findAll({ patientId }),
-    diagnosisRepo.findAll({ patientId }),
-    pharmacyRepo.listDispenses({ patientId }),
+    treatmentRepo.findAll({ patientId: patient.id }),
+    diagnosisRepo.findAll({ patientId: patient.id }),
+    pharmacyRepo.listDispenses({ patientId: patient.id }),
   ]);
   return { treatments, diagnoses, prescriptions };
 }
 
 async function shareRecord(data) {
-  return sharedRecordRepo.insert({
+  const saved = await sharedRecordRepo.insert({
     id: generateId('share'),
     patientId: data.patientId,
     sharedWith: data.sharedWith,
@@ -101,22 +133,58 @@ async function shareRecord(data) {
     recordId: data.recordId,
     expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
   });
+  await auditService.log({
+    userId: data.userId || null,
+    mspId: data.mspId || 'PatientAccessMSP',
+    action: 'patient.share_record',
+    resource: 'shared_record',
+    resourceId: saved.id,
+    metadata: {
+      patientId: saved.patientId,
+      sharedWith: saved.sharedWith,
+      recordType: saved.recordType,
+      recordId: saved.recordId,
+    },
+  });
+  return saved;
 }
 
 async function revokeShare(id) {
-  return sharedRecordRepo.delete(id);
+  const existing = await sharedRecordRepo.findById(id);
+  const result = await sharedRecordRepo.delete(id);
+  await auditService.log({
+    userId: existing?.userId || null,
+    mspId: 'PatientAccessMSP',
+    action: 'patient.revoke_share',
+    resource: 'shared_record',
+    resourceId: id,
+  });
+  return result;
 }
 
 async function saveDocument(patientId, file, metadata = {}) {
-  await getPatient(patientId);
-  return documentRepo.insert({
+  const patient = await getPatient(patientId);
+  const saved = await documentRepo.insert({
     id: generateId('doc'),
-    patientId,
+    patientId: patient.id,
     fileName: file.originalname,
     filePath: file.path,
     mimeType: file.mimetype,
     metadata,
   });
+  await auditService.log({
+    userId: patient.userId || null,
+    mspId: 'PatientAccessMSP',
+    action: 'patient.document_uploaded',
+    resource: 'document',
+    resourceId: saved.id,
+    metadata: {
+      patientId: patient.id,
+      fileName: saved.fileName,
+      mimeType: saved.mimeType,
+    },
+  });
+  return saved;
 }
 
 async function getPatientWithChainVerification(id, mspId) {

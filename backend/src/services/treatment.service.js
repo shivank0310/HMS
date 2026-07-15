@@ -1,26 +1,91 @@
 const treatmentRepo = require('../repositories/treatment.repository');
+const auditService = require('./audit.service');
 const syncService = require('../blockchain/syncService');
 const { generateId } = require('../utils/id');
 const ApiError = require('../utils/ApiError');
 
-async function create(data, mspId = 'ClinicalStaffMSP') {
+function buildSuggestedPlan({ reason = '', notes = '' }) {
+  const text = `${reason} ${notes}`.toLowerCase();
+
+  if (text.includes('fever') || text.includes('cough') || text.includes('cold')) {
+    return {
+      diagnosis: 'Respiratory infection or viral syndrome',
+      plan: 'Rest, hydration, temperature monitoring, symptomatic medication, and follow-up if symptoms worsen.',
+      urgency: 'routine',
+    };
+  }
+
+  if (text.includes('chest') || text.includes('heart') || text.includes('cardio')) {
+    return {
+      diagnosis: 'Cardiac evaluation required',
+      plan: 'ECG review, vitals monitoring, cardiology follow-up, and escalation for any worsening chest symptoms.',
+      urgency: 'urgent',
+    };
+  }
+
+  if (text.includes('diabetes') || text.includes('sugar') || text.includes('glucose')) {
+    return {
+      diagnosis: 'Metabolic / diabetes follow-up',
+      plan: 'Blood glucose tracking, diet review, medication adherence check, and HbA1c follow-up.',
+      urgency: 'routine',
+    };
+  }
+
+  if (text.includes('pain') || text.includes('joint') || text.includes('bone') || text.includes('fracture')) {
+    return {
+      diagnosis: 'Musculoskeletal assessment',
+      plan: 'Pain assessment, imaging if needed, rest/immobilization guidance, and specialist review.',
+      urgency: 'routine',
+    };
+  }
+
+  return {
+    diagnosis: 'Clinical assessment required',
+    plan: 'Full clinical examination, vitals review, relevant tests, and follow-up based on findings.',
+    urgency: 'routine',
+  };
+}
+
+async function create(data, mspId = 'ClinicalStaffMSP', options = {}) {
   const id = generateId('trt');
+  const suggestion = options.suggestion || buildSuggestedPlan({ reason: data.reason, notes: data.notes });
   const record = {
     id,
     patientId: data.patientId,
     doctorId: data.doctorId || null,
-    diagnosis: data.diagnosis || null,
-    status: 'active',
+    diagnosis: data.diagnosis || suggestion.diagnosis || null,
+    status: options.status || 'planned',
     notes: data.notes || null,
     vitals: data.vitals || {},
-    metadata: data.metadata || {},
+    metadata: {
+      ...(data.metadata || {}),
+      suggestion,
+      sourceAppointmentId: data.sourceAppointmentId || null,
+      appointmentReason: data.reason || null,
+    },
   };
 
   const sync = await syncService.syncToChain('treatment', mspId, record);
-  return treatmentRepo.insert({ ...record, blockchain: sync.blockchain });
+  const saved = await treatmentRepo.insert({ ...record, blockchain: sync.blockchain });
+  await auditService.log({
+    userId: data.userId || null,
+    mspId,
+    action: 'treatment.created',
+    resource: 'treatment',
+    resourceId: saved.id,
+    metadata: {
+      patientId: saved.patientId,
+      doctorId: saved.doctorId,
+      appointmentId: data.sourceAppointmentId || null,
+      suggestion,
+    },
+  });
+  return saved;
 }
 
-async function list() {
+async function list(filters = {}) {
+  if (filters.patientId) return treatmentRepo.findAll({ patientId: filters.patientId });
+  if (filters.doctorId) return treatmentRepo.findAll({ doctorId: filters.doctorId });
   return treatmentRepo.findAll();
 }
 
@@ -77,4 +142,4 @@ async function refer(id, referral) {
   });
 }
 
-module.exports = { create, list, getById, update, addNotes, addVitals, discharge, refer };
+module.exports = { create, list, getById, update, addNotes, addVitals, discharge, refer, buildSuggestedPlan };

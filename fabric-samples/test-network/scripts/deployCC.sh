@@ -53,6 +53,37 @@ FABRIC_CFG_PATH=$PWD/../config/
 . scripts/envVar.sh
 . scripts/ccutils.sh
 
+CHANNEL_KEY="$(printf '%s' "$CHANNEL_NAME" | tr -cd '[:alnum:]' | tr '[:upper:]' '[:lower:]')"
+
+channel_orgs() {
+  case "$CHANNEL_KEY" in
+    patientchannel) echo "1 2 6" ;;
+    treatmentchannel) echo "1 2 3" ;;
+    billingchannel) echo "1 5 6" ;;
+    emergencychannel) echo "1 2 3" ;;
+    pharmacychannel) echo "1 2 4" ;;
+    auditchannel) echo "1 5" ;;
+    *) echo "1 2" ;;
+  esac
+}
+
+readiness_expectations() {
+  local approved_orgs=" $* "
+  local expectations=()
+  for ORG in $CHANNEL_ORGS; do
+    local MSP_ID
+    MSP_ID=$(mspid_for_org "$ORG") || return 1
+    if [[ "$approved_orgs" == *" $ORG "* ]]; then
+      expectations+=("\"${MSP_ID}\": true")
+    else
+      expectations+=("\"${MSP_ID}\": false")
+    fi
+  done
+  printf '%s\n' "${expectations[@]}"
+}
+
+CHANNEL_ORGS="$(channel_orgs)"
+
 function checkPrereqs() {
   jq --version > /dev/null 2>&1
 
@@ -73,46 +104,41 @@ checkPrereqs
 
 PACKAGE_ID=$(peer lifecycle chaincode calculatepackageid ${CC_NAME}.tar.gz)
 
-## Install chaincode on peer0.org1 and peer0.org2
-infoln "Installing chaincode on peer0.org1..."
-installChaincode 1
-infoln "Install chaincode on peer0.org2..."
-installChaincode 2
+## Install chaincode on all peers that belong to this channel.
+for ORG in $CHANNEL_ORGS; do
+  infoln "Installing chaincode on peer0.org${ORG}..."
+  installChaincode "$ORG"
+done
 
 resolveSequence
 
 ## query whether the chaincode is installed
 queryInstalled 1
 
-## approve the definition for org1
-approveForMyOrg 1
+APPROVED_ORGS=""
+for ORG in $CHANNEL_ORGS; do
+  approveForMyOrg "$ORG"
+  APPROVED_ORGS="${APPROVED_ORGS} ${ORG}"
+  mapfile -t EXPECTED_READINESS < <(readiness_expectations $APPROVED_ORGS)
+  for CHECK_ORG in $CHANNEL_ORGS; do
+    checkCommitReadiness "$CHECK_ORG" "${EXPECTED_READINESS[@]}"
+  done
+done
 
-## check whether the chaincode definition is ready to be committed
-## expect org1 to have approved and org2 not to
-checkCommitReadiness 1 "\"Org1MSP\": true" "\"Org2MSP\": false"
-checkCommitReadiness 2 "\"Org1MSP\": true" "\"Org2MSP\": false"
+## now that we know for sure all channel orgs have approved, commit the definition
+commitChaincodeDefinition $CHANNEL_ORGS
 
-## now approve also for org2
-approveForMyOrg 2
-
-## check whether the chaincode definition is ready to be committed
-## expect them both to have approved
-checkCommitReadiness 1 "\"Org1MSP\": true" "\"Org2MSP\": true"
-checkCommitReadiness 2 "\"Org1MSP\": true" "\"Org2MSP\": true"
-
-## now that we know for sure both orgs have approved, commit the definition
-commitChaincodeDefinition 1 2
-
-## query on both orgs to see that the definition committed successfully
-queryCommitted 1
-queryCommitted 2
+## query on all channel orgs to see that the definition committed successfully
+for ORG in $CHANNEL_ORGS; do
+  queryCommitted "$ORG"
+done
 
 ## Invoke the chaincode - this does require that the chaincode have the 'initLedger'
 ## method defined
 if [ "$CC_INIT_FCN" = "NA" ]; then
   infoln "Chaincode initialization is not required"
 else
-  chaincodeInvokeInit 1 2
+  chaincodeInvokeInit $CHANNEL_ORGS
 fi
 
 exit 0

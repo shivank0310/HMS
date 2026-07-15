@@ -1,7 +1,7 @@
 {
   "name": "medichain-treatment-chaincode",
   "version": "1.0.0",
-  "description": "MediChain treatment channel chaincode with dynamic fields",
+  "description": "MediChain treatment channel chaincode",
   "main": "index.js",
   "engines": {
     "node": ">=18"

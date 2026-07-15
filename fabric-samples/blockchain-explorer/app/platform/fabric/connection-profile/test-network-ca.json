@@ -25,6 +25,47 @@
 		}
 	},
 	"channels": {
+		"patientchannel": {
+			"peers": {
+				"peer0.hospitaladmin.example.com": {},
+				"peer0.clinicalstaff.example.com": {},
+				"peer0.patientaccess.example.com": {}
+			}
+		},
+		"treatmentchannel": {
+			"peers": {
+				"peer0.hospitaladmin.example.com": {},
+				"peer0.clinicalstaff.example.com": {},
+				"peer0.diagnosticstaff.example.com": {}
+			}
+		},
+		"billingchannel": {
+			"peers": {
+				"peer0.hospitaladmin.example.com": {},
+				"peer0.insurance.example.com": {},
+				"peer0.patientaccess.example.com": {}
+			}
+		},
+		"emergencychannel": {
+			"peers": {
+				"peer0.hospitaladmin.example.com": {},
+				"peer0.clinicalstaff.example.com": {},
+				"peer0.diagnosticstaff.example.com": {}
+			}
+		},
+		"pharmacychannel": {
+			"peers": {
+				"peer0.hospitaladmin.example.com": {},
+				"peer0.clinicalstaff.example.com": {},
+				"peer0.pharmacy.example.com": {}
+			}
+		},
+		"auditchannel": {
+			"peers": {
+				"peer0.hospitaladmin.example.com": {},
+				"peer0.insurance.example.com": {}
+			}
+		},
 		"mychannel": {
 			"peers": {
 				"peer0.hospitaladmin.example.com": {},

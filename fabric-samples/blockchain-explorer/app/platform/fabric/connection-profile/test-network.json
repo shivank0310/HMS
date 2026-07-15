@@ -66,7 +66,7 @@
 		"HospitalAdminMSP": {
 			"mspid": "HospitalAdminMSP",
 			"adminPrivateKey": {
-				"path": "../test-network/organizations/peerOrganizations/hospitaladmin.example.com/users/Admin@hospitaladmin.example.com/msp/keystore/90531ac949de30c211d386612dd54e623ba5c63abcb410be880b3fd17f7cde51_sk"
+				"path": "../test-network/organizations/peerOrganizations/hospitaladmin.example.com/users/Admin@hospitaladmin.example.com/msp/keystore/3830e63bac5b3f9ac6031b6dea1d0ea7aee494807dd8dfd4d0d521711b6f9acd_sk"
 			},
 			"peers": ["peer0.hospitaladmin.example.com"],
 			"signedCert": {
@@ -76,7 +76,7 @@
 		"ClinicalStaffMSP": {
 			"mspid": "ClinicalStaffMSP",
 			"adminPrivateKey": {
-				"path": "../test-network/organizations/peerOrganizations/clinicalstaff.example.com/users/Admin@clinicalstaff.example.com/msp/keystore/90b0acc28c85357867d48ac55027b5a9b4963cb386ddb2288dc7d63296d2ad4f_sk"
+				"path": "../test-network/organizations/peerOrganizations/clinicalstaff.example.com/users/Admin@clinicalstaff.example.com/msp/keystore/45d6020a4ddaad095cc066423651ff04278c43a309bfd4733c15c53766eb7ae4_sk"
 			},
 			"peers": ["peer0.clinicalstaff.example.com"],
 			"signedCert": {
@@ -86,7 +86,7 @@
 		"DiagnosticStaffMSP": {
 			"mspid": "DiagnosticStaffMSP",
 			"adminPrivateKey": {
-				"path": "../test-network/organizations/peerOrganizations/diagnosticstaff.example.com/users/Admin@diagnosticstaff.example.com/msp/keystore/373e4efa1687d0a98064f71de790a1a0f6359c8c0e465af855124995fc98af21_sk"
+				"path": "../test-network/organizations/peerOrganizations/diagnosticstaff.example.com/users/Admin@diagnosticstaff.example.com/msp/keystore/658b1be80e2e38e002a0b44dbb129f0e1be24cdf765420546ac6b1b105849699_sk"
 			},
 			"peers": ["peer0.diagnosticstaff.example.com"],
 			"signedCert": {
@@ -96,7 +96,7 @@
 		"PharmacyServicesMSP": {
 			"mspid": "PharmacyServicesMSP",
 			"adminPrivateKey": {
-				"path": "../test-network/organizations/peerOrganizations/pharmacy.example.com/users/Admin@pharmacy.example.com/msp/keystore/2b95da168afe3c285b90bf2d38408e948665b0f24613735c53a29a1f21e94090_sk"
+				"path": "../test-network/organizations/peerOrganizations/pharmacy.example.com/users/Admin@pharmacy.example.com/msp/keystore/dd2dcd8f0e4ebdc552c6bb06c78700494652b058dd872ff0390bbe8c76093700_sk"
 			},
 			"peers": ["peer0.pharmacy.example.com"],
 			"signedCert": {
@@ -106,7 +106,7 @@
 		"InsuranceProviderMSP": {
 			"mspid": "InsuranceProviderMSP",
 			"adminPrivateKey": {
-				"path": "../test-network/organizations/peerOrganizations/insurance.example.com/users/Admin@insurance.example.com/msp/keystore/1178249eeca25d594d4ff8b9df543dccf42a8fbc6854711b15c6860ba602c38b_sk"
+				"path": "../test-network/organizations/peerOrganizations/insurance.example.com/users/Admin@insurance.example.com/msp/keystore/2cd9ecaa7f93c8b69c8d3bcd65b4c84ad8a822edc0477670ae3f97427a573e14_sk"
 			},
 			"peers": ["peer0.insurance.example.com"],
 			"signedCert": {
@@ -116,7 +116,7 @@
 		"PatientAccessMSP": {
 			"mspid": "PatientAccessMSP",
 			"adminPrivateKey": {
-				"path": "../test-network/organizations/peerOrganizations/patientaccess.example.com/users/Admin@patientaccess.example.com/msp/keystore/b0bf03868fe13da9496d711dd0c1d543d8cf43c1f32465191d54de9a592be5ea_sk"
+				"path": "../test-network/organizations/peerOrganizations/patientaccess.example.com/users/Admin@patientaccess.example.com/msp/keystore/7d16644c338d3600c4c464c7fcbefc6b137115a7f31cc0cf9fbe38e70622c490_sk"
 			},
 			"peers": ["peer0.patientaccess.example.com"],
 			"signedCert": {

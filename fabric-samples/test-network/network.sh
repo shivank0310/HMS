@@ -21,6 +21,7 @@ ROOTDIR=$(cd "$(dirname "$0")" && pwd)
 export PATH=${ROOTDIR}/../bin:${PWD}/../bin:$PATH
 export FABRIC_CFG_PATH=${PWD}/configtx
 export VERBOSE=false
+export DOCKER_API_VERSION=${DOCKER_API_VERSION:-1.43}
 
 # push to the required directory & set a trap to go back if needed
 pushd ${ROOTDIR} > /dev/null
@@ -342,6 +343,34 @@ function createOrgs() {
     -f compose/$COMPOSE_FILE_CA up -d 2>&1
 
     . organizations/fabric-ca/registerEnroll.sh
+
+    waitForFabricCA() {
+      local ORG_DIR="$1"
+      local CA_NAME="$2"
+      local CA_PORT="$3"
+      local rc=1
+      local COUNTER=1
+
+      infoln "Waiting for ${CA_NAME} on localhost:${CA_PORT}"
+      while [ $rc -ne 0 ] && [ $COUNTER -le $MAX_RETRY ]; do
+        sleep 1
+        fabric-ca-client getcainfo -u https://localhost:${CA_PORT} --caname ${CA_NAME} --tls.certfiles "${PWD}/organizations/fabric-ca/${ORG_DIR}/ca-cert.pem" >/dev/null 2>&1
+        rc=$?
+        COUNTER=$((COUNTER + 1))
+      done
+
+      if [ $rc -ne 0 ]; then
+        fatalln "Fabric CA ${CA_NAME} did not become ready on localhost:${CA_PORT}"
+      fi
+    }
+
+    waitForFabricCA hospitaladmin ca-hospitaladmin 7054
+    waitForFabricCA clinicalstaff ca-clinicalstaff 8054
+    waitForFabricCA diagnosticstaff ca-diagnosticstaff 9054
+    waitForFabricCA pharmacy ca-pharmacy 10054
+    waitForFabricCA insurance ca-insurance 11054
+    waitForFabricCA patientaccess ca-patientaccess 12054
+    waitForFabricCA ordererOrg ca-orderer 13054
 
     infoln "Creating Hospital Admin Identities"
     createHospitalAdmin
@@ -678,9 +707,24 @@ function networkDown() {
       docker_peer0.pharmacy.example.com \
       docker_peer0.insurance.example.com \
       docker_peer0.patientaccess.example.com \
-      docker_peer0.org3.example.com
+      docker_peer0.org3.example.com \
+      compose_orderer.example.com \
+      compose_peer0.hospitaladmin.example.com \
+      compose_peer0.clinicalstaff.example.com \
+      compose_peer0.diagnosticstaff.example.com \
+      compose_peer0.pharmacy.example.com \
+      compose_peer0.insurance.example.com \
+      compose_peer0.patientaccess.example.com
     #Cleanup the chaincode containers
     clearContainers
+    ${CONTAINER_CLI} volume rm \
+      compose_orderer.example.com \
+      compose_peer0.hospitaladmin.example.com \
+      compose_peer0.clinicalstaff.example.com \
+      compose_peer0.diagnosticstaff.example.com \
+      compose_peer0.pharmacy.example.com \
+      compose_peer0.insurance.example.com \
+      compose_peer0.patientaccess.example.com
     #Cleanup images
     removeUnwantedImages
     # remove orderer block and other channel configuration transactions and certs

@@ -7,6 +7,7 @@ const pharmacyRepo = require('../repositories/pharmacy.repository');
 const { doctorRepo } = require('../repositories/misc.repository');
 const patientService = require('./patient.service');
 const authService = require('./auth.service');
+const auditService = require('./audit.service');
 const { generateId } = require('../utils/id');
 const { ROLES } = require('../utils/roles');
 
@@ -40,7 +41,7 @@ async function registerStaff(payload) {
   const user = await authService.registerUser({ ...payload, role });
 
   if (payload.type === 'doctor') {
-    await doctorRepo.insert({
+    const doctor = await doctorRepo.insert({
       id: generateId('doc'),
       userId: user.id,
       specialization: payload.specialization || null,
@@ -48,6 +49,18 @@ async function registerStaff(payload) {
       department: payload.department || null,
       metadata: payload.metadata || {},
     });
+    await auditService.log({
+      userId: user.id,
+      mspId: user.mspId || 'HospitalAdminMSP',
+      action: 'doctor.registered',
+      resource: 'doctor',
+      resourceId: doctor.id,
+      metadata: {
+        department: doctor.department,
+        specialization: doctor.specialization,
+      },
+    });
+    return { user, doctor };
   }
 
   return user;

@@ -1,8 +1,0 @@
-{
-  "patientcc": "patientcc_1.0:f5554c9ce676f96db507b21635557f4abd5b9ee368458be92214f3ff7a0e0fbd",
-  "treatmentcc": "treatmentcc_1.0:223653fb0d8f347af52d218b424d389854840a69d42cad85a009ea8904fee6bd",
-  "billingcc": "billingcc_1.0:464f05b087906c15652b2fa26b9ad3e7295ad19dee36868ec5eef7687a84fadf",
-  "emergencycc": "emergencycc_1.0:2dc1717b72e845f691d62e0ea1374c9f3d646499f5bf5bdcd4dc006d2e79e37a",
-  "pharmacycc": "pharmacycc_1.0:6f9536c6b13a75e836d8415c23453083f1beaa38cab16aacbf94051724207660",
-  "auditcc": "auditcc_1.0:401539961804187d443bcab05225e5865f1a3f3bf25237d3ce17f6d5926189fd"
-}

@@ -10,8 +10,6 @@ TEST_NETWORK_HOME="${TEST_NETWORK_HOME:-/home/ssingh1/Desktop/HMS/fabric-samples
 infoln() { echo -e "\033[0;34m[INFO]\033[0m $*"; }
 successln() { echo -e "\033[0;32m[SUCCESS]\033[0m $*"; }
 
-bash "${ROOT_DIR}/prepare-chaincode.sh"
-
 declare -A CHANNEL_CC=(
   [patientchannel]=patientcc
   [treatmentchannel]=treatmentcc
@@ -28,7 +26,7 @@ for channel in patientchannel treatmentchannel billingchannel emergencychannel p
   infoln "Deploying ${cc_name} to ${channel}"
   infoln "============================================================"
   TEST_NETWORK_HOME="${TEST_NETWORK_HOME}" bash "${ROOT_DIR}/deploy-channel.sh" \
-    "${channel}" "${cc_name}" "${cc_path}" 1.0 1
+    "${channel}" "${cc_name}" "${cc_path}" 1.0 auto
 done
 
 successln "All MediChain chaincodes deployed successfully."

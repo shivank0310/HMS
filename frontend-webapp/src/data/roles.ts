@@ -11,9 +11,10 @@ export const roleConfigs: Record<RoleConfig['key'], RoleConfig> = {
     search: 'Search patients, conditions...',
     sidebarLabel: 'Clinical Tools',
     menu: [
-      { icon: '🏠', label: 'Overview', dash: 'doctor' },
+      { icon: '🏠', label: 'Dashboard', dash: 'doctor' },
       { icon: '👥', label: 'My Patients', dash: 'doctor' },
       { icon: '💊', label: 'Prescriptions', dash: 'doctor' },
+      { icon: '🩺', label: 'Treatment', dash: 'doctor' },
       { icon: '🤖', label: 'AI Insights', dash: 'doctor' },
       { icon: '📊', label: 'Performance', dash: 'doctor' },
     ],
@@ -29,6 +30,7 @@ export const roleConfigs: Record<RoleConfig['key'], RoleConfig> = {
     sidebarLabel: 'My Health',
     menu: [
       { icon: '🏠', label: 'Health Overview', dash: 'patient' },
+      { icon: '🗓️', label: 'Book Appointment', dash: 'patient' },
       { icon: '📅', label: 'Appointments', dash: 'patient' },
       { icon: '💊', label: 'Medications', dash: 'patient' },
       { icon: '📄', label: 'Medical Records', dash: 'patient' },

@@ -1,7 +1,7 @@
 {
   "name": "medichain-audit-chaincode",
   "version": "1.0.0",
-  "description": "MediChain audit channel chaincode with dynamic fields",
+  "description": "MediChain audit channel chaincode",
   "main": "index.js",
   "engines": {
     "node": ">=18"

@@ -25,17 +25,24 @@ async function readFromChain(moduleKey, mspId, recordId) {
 }
 
 async function verifyIntegrity(moduleKey, mspId, mongoRecord) {
-  const chainData = await readFromChain(moduleKey, mspId, mongoRecord.id);
-  if (!chainData) return { verified: false, reason: 'not_on_chain' };
+  try {
+    const chainData = await readFromChain(moduleKey, mspId, mongoRecord.id);
+    if (!chainData) return { verified: false, reason: 'not_on_chain' };
 
-  const { offChainHash } = splitRecord(moduleKey, mongoRecord);
-  const chainHash = chainData.offChainHash;
-  return {
-    verified: chainHash === offChainHash,
-    chainHash,
-    computedHash: offChainHash,
-    chainData,
-  };
+    const { offChainHash } = splitRecord(moduleKey, mongoRecord);
+    const chainHash = chainData.offChainHash;
+    return {
+      verified: chainHash === offChainHash,
+      chainHash,
+      computedHash: offChainHash,
+      chainData,
+    };
+  } catch (err) {
+    return {
+      verified: false,
+      reason: err.message || 'chain_lookup_failed',
+    };
+  }
 }
 
 module.exports = { syncToChain, readFromChain, verifyIntegrity };

@@ -28,6 +28,9 @@ export interface RegisterPayload {
   password: string;
   role: string;
   phone?: string;
+  department?: string;
+  specialization?: string;
+  licenseNumber?: string;
 }
 
 async function request<T>(path: string, options: RequestInit = {}) {

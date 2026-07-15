@@ -26,7 +26,9 @@ infoln "Starting Fabric network..."
 for channel in patientchannel treatmentchannel billingchannel emergencychannel pharmacychannel auditchannel; do
   if docker ps --format '{{.Names}}' | grep -q "peer0.hospitaladmin.example.com"; then
     infoln "Creating channel ${channel}..."
-    ./network.sh createChannel -c "${channel}"
+    if ! ./network.sh createChannel -c "${channel}"; then
+      infoln "Channel ${channel} already exists or could not be recreated; continuing."
+    fi
   fi
 done
 

@@ -77,6 +77,9 @@ export default function DashboardPage({ user, activeMenu, onSelectMenu, onLogout
           dashboardData={dashboardData}
           isLoading={isLoadingDashboard}
           error={dashboardError}
+          accessToken={user.accessToken}
+          patientId={user.id}
+          onSelectMenu={onSelectMenu}
         />
       </div>
     </AppShell>

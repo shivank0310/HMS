@@ -1,7 +1,7 @@
 {
   "name": "medichain-billing-chaincode",
   "version": "1.0.0",
-  "description": "MediChain billing channel chaincode with dynamic fields",
+  "description": "MediChain billing channel chaincode",
   "main": "index.js",
   "engines": {
     "node": ">=18"

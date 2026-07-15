@@ -11,6 +11,22 @@ const demoAccounts = [
   { icon: '💊', label: 'Billing & Pharmacy', role: 'pharmacist', email: 'pharmacy@hospital.com', password: 'Pharmacy@123' },
 ] as const;
 
+const departmentOptions = [
+  'General Medicine',
+  'Cardiology',
+  'Neurology',
+  'Orthopaedics',
+  'Paediatrics',
+  'Gynecology',
+  'Dermatology',
+  'Psychiatry',
+  'Oncology',
+  'ENT',
+  'Urology',
+  'Pathology',
+  'ICU',
+];
+
 type AuthMode = 'login' | 'create';
 
 function encodeSession(response: LoginResponse) {
@@ -25,6 +41,9 @@ export default function WebsiteLogin() {
   const [email, setEmail] = useState<string>(demoAccounts[0].email);
   const [password, setPassword] = useState<string>(demoAccounts[0].password);
   const [phone, setPhone] = useState('');
+  const [department, setDepartment] = useState('');
+  const [specialization, setSpecialization] = useState('');
+  const [licenseNumber, setLicenseNumber] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setSubmitting] = useState(false);
 
@@ -33,6 +52,11 @@ export default function WebsiteLogin() {
     setSelectedRole(account.role);
     setEmail(account.email);
     setPassword(mode === 'login' ? account.password : '');
+    if (account.role !== 'doctor') {
+      setDepartment('');
+      setSpecialization('');
+      setLicenseNumber('');
+    }
     setError('');
   };
 
@@ -47,6 +71,9 @@ export default function WebsiteLogin() {
     }
     setEmail('');
     setPassword('');
+    setDepartment('');
+    setSpecialization('');
+    setLicenseNumber('');
   };
 
   const openDashboard = (response: LoginResponse) => {
@@ -86,6 +113,9 @@ export default function WebsiteLogin() {
         password,
         role: selectedRole,
         phone: phone.trim() || undefined,
+        department: selectedRole === 'doctor' ? department.trim() || undefined : undefined,
+        specialization: selectedRole === 'doctor' ? specialization.trim() || undefined : undefined,
+        licenseNumber: selectedRole === 'doctor' ? licenseNumber.trim() || undefined : undefined,
       });
       const response = await login(email.trim(), password);
       openDashboard(response);
@@ -163,6 +193,40 @@ export default function WebsiteLogin() {
                 onChange={(event) => setFullName(event.target.value)}
               />
             </label>
+          ) : null}
+
+          {mode === 'create' && selectedRole === 'doctor' ? (
+            <>
+              <label className="website-field">
+                <span>Department</span>
+                <select value={department} onChange={(event) => setDepartment(event.target.value)} required>
+                  <option value="">Select department</option>
+                  {departmentOptions.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="website-field">
+                <span>Specialization optional</span>
+                <input
+                  type="text"
+                  value={specialization}
+                  placeholder="Cardiologist, Surgeon..."
+                  onChange={(event) => setSpecialization(event.target.value)}
+                />
+              </label>
+              <label className="website-field">
+                <span>License number optional</span>
+                <input
+                  type="text"
+                  value={licenseNumber}
+                  placeholder="Medical council ID"
+                  onChange={(event) => setLicenseNumber(event.target.value)}
+                />
+              </label>
+            </>
           ) : null}
 
           <label className="website-field">

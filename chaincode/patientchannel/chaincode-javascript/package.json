@@ -1,7 +1,7 @@
 {
   "name": "medichain-chaincode-template",
   "version": "1.0.0",
-  "description": "MediChain dynamic-field chaincode template",
+  "description": "MediChain patient channel chaincode",
   "main": "index.js",
   "engines": {
     "node": ">=18"

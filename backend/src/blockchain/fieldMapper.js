@@ -7,8 +7,24 @@ const { CHANNELS } = require('../config/fabric');
  */
 const FIELD_SETS = {
   patient: {
-    onChain: ['recordId', 'mrn', 'fullName', 'gender', 'bloodGroup', 'status', 'offChainHash'],
-    offChain: ['dateOfBirth', 'contactEmail', 'contactPhone', 'address', 'allergies', 'emergencyContact', 'metadata', 'userId'],
+    onChain: [
+      'recordId',
+      'mrn',
+      'userId',
+      'fullName',
+      'dateOfBirth',
+      'gender',
+      'bloodGroup',
+      'contactEmail',
+      'contactPhone',
+      'address',
+      'allergies',
+      'emergencyContact',
+      'status',
+      'metadata',
+      'offChainHash',
+    ],
+    offChain: [],
   },
   treatment: {
     onChain: ['recordId', 'patientId', 'diagnosis', 'status', 'doctorId', 'offChainHash'],

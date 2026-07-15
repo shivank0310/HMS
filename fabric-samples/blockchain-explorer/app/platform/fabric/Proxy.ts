@@ -115,18 +115,19 @@ export class Proxy {
 	 */
 	async getPeersStatus(network_id, channel_genesis_hash) {
 		const client = await this.platform.getClient(network_id);
-		const channel_name = client.getChannelNameByHash(channel_genesis_hash);
+		const channel_name =
+			client.getChannelNameByHash(channel_genesis_hash) || channel_genesis_hash;
 		const nodes = await this.persistence
 			.getMetricService()
 			.getPeerList(network_id, channel_genesis_hash);
 		const clientReady = client && client.getStatus && client.getStatus();
 		let discover_results;
 		let orderersList = [];
-		if (clientReady && client.fabricGateway) {
-			orderersList = await client.fabricGateway.getActiveOrderersList(
-				channel_name
-			);
+		if (clientReady && client.fabricGateway && channel_name) {
 			try {
+				orderersList = await client.fabricGateway.getActiveOrderersList(
+					channel_name
+				);
 				discover_results = await client.initializeChannelFromDiscover(channel_name);
 			} catch (e) {
 				logger.debug('getPeersStatus >> ', e);

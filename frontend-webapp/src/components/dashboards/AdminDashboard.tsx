@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
 import Alert from '@/components/ui/Alert';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
@@ -6,6 +7,7 @@ import MetricCard from '@/components/ui/MetricCard';
 import ProgressBar from '@/components/ui/ProgressBar';
 import BlockchainStatus from '@/components/dashboards/BlockchainStatus';
 import { chainSyncedValue, metricValue } from '@/components/dashboards/dashboardMetrics';
+import { registerDoctor, type DoctorRegistrationPayload } from '@/services/admin';
 import type { DashboardComponentProps } from '@/types';
 import './AdminDashboard.css';
 
@@ -44,13 +46,107 @@ const staffRows = [
   },
 ];
 
-export default function AdminDashboard({ activeMenu, dashboardData, isLoading, error }: DashboardComponentProps) {
+const departmentOptions = [
+  'General Medicine',
+  'Cardiology',
+  'Neurology',
+  'Orthopaedics',
+  'Paediatrics',
+  'Gynecology',
+  'Dermatology',
+  'Psychiatry',
+  'Oncology',
+  'ENT',
+  'Urology',
+  'Pathology',
+  'ICU',
+];
+
+const emptyDoctorForm: DoctorRegistrationPayload = {
+  fullName: '',
+  email: '',
+  password: '',
+  phone: '',
+  specialization: '',
+  licenseNumber: '',
+  department: '',
+  metadata: {},
+};
+
+export default function AdminDashboard({ activeMenu, dashboardData, isLoading, error, accessToken }: DashboardComponentProps) {
+  const [doctorForm, setDoctorForm] = useState(emptyDoctorForm);
+  const [doctorMessage, setDoctorMessage] = useState('');
+  const [doctorError, setDoctorError] = useState('');
+  const [doctorSubmitting, setDoctorSubmitting] = useState(false);
+  const [doctorDirectory, setDoctorDirectory] = useState(() => (dashboardData?.records?.doctors ?? []) as Record<string, unknown>[]);
+
   const isOverview = activeMenu === 'Operations Overview';
   const showMetrics = isOverview || activeMenu === 'Bed Management' || activeMenu === 'Staff Management';
   const showAlerts = isOverview || activeMenu === 'Bed Management' || activeMenu === 'Staff Management' || activeMenu === 'Compliance';
   const showBeds = isOverview || activeMenu === 'Bed Management' || activeMenu === 'Financials';
   const showStaff = isOverview || activeMenu === 'Staff Management';
   const showCompliance = isOverview || activeMenu === 'Compliance';
+
+  useEffect(() => {
+    setDoctorDirectory((dashboardData?.records?.doctors ?? []) as Record<string, unknown>[]);
+  }, [dashboardData]);
+
+  const registeredDoctors = useMemo(
+    () => doctorDirectory.map((doctor) => ({
+      id: String(doctor.id || doctor.userId || doctor.licenseNumber || doctor.fullName || 'doctor'),
+      name: String(doctor.fullName || doctor.name || doctor.displayName || doctor.id || 'Doctor'),
+      department: String(doctor.department || 'General Medicine'),
+      specialization: String(doctor.specialization || 'Unspecified'),
+      licenseNumber: String(doctor.licenseNumber || ''),
+    })),
+    [doctorDirectory],
+  );
+
+  const handleDoctorFormChange = (field: keyof DoctorRegistrationPayload) => (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { value } = event.target;
+    setDoctorForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  };
+
+  const handleDoctorSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!doctorForm.fullName || !doctorForm.email || !doctorForm.password || !doctorForm.department) {
+      setDoctorError('Please fill in full name, email, password, and department.');
+      return;
+    }
+
+    if (!accessToken) {
+      setDoctorError('Missing admin session token.');
+      return;
+    }
+
+    setDoctorSubmitting(true);
+    setDoctorError('');
+    setDoctorMessage('');
+
+    try {
+      const result = await registerDoctor(accessToken, doctorForm);
+      setDoctorMessage(`Doctor account created for ${result.doctor.department || 'General Medicine'}.`);
+      setDoctorDirectory((current) => [
+        {
+          id: result.doctor.id,
+          userId: result.user.id,
+          fullName: result.user.fullName || doctorForm.fullName,
+          specialization: result.doctor.specialization || doctorForm.specialization || null,
+          licenseNumber: result.doctor.licenseNumber || doctorForm.licenseNumber || null,
+          department: result.doctor.department || doctorForm.department,
+        },
+        ...current,
+      ]);
+      setDoctorForm(emptyDoctorForm);
+    } catch (submitError) {
+      setDoctorError(submitError instanceof Error ? submitError.message : 'Unable to register doctor');
+    } finally {
+      setDoctorSubmitting(false);
+    }
+  };
 
   return (
     <div className="dashboard-tab admin-dashboard">
@@ -142,6 +238,79 @@ export default function AdminDashboard({ activeMenu, dashboardData, isLoading, e
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+      ) : null}
+
+      {showStaff ? (
+      <div className="grid-2 mt3">
+        <div className="card">
+          <div className="card-title">🩺 Register Doctor</div>
+          <div className="card-sub">Create a doctor account and map it to a department for patient booking.</div>
+          {doctorMessage ? <Alert tone="success">{doctorMessage}</Alert> : null}
+          {doctorError ? <Alert tone="danger">{doctorError}</Alert> : null}
+          <form className="portal-form" onSubmit={handleDoctorSubmit}>
+            <label>
+              Full Name
+              <input type="text" value={doctorForm.fullName} onChange={handleDoctorFormChange('fullName')} placeholder="Dr. Name" required />
+            </label>
+            <label>
+              Email
+              <input type="email" value={doctorForm.email} onChange={handleDoctorFormChange('email')} placeholder="doctor@hospital.com" required />
+            </label>
+            <label>
+              Password
+              <input type="password" value={doctorForm.password} onChange={handleDoctorFormChange('password')} placeholder="Create a secure password" required />
+            </label>
+            <label>
+              Department
+              <select value={doctorForm.department} onChange={handleDoctorFormChange('department')} required>
+                <option value="">Select department</option>
+                {departmentOptions.map((department) => (
+                  <option key={department} value={department}>
+                    {department}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Specialization
+              <input type="text" value={doctorForm.specialization} onChange={handleDoctorFormChange('specialization')} placeholder="Cardiologist, Surgeon..." />
+            </label>
+            <label>
+              License Number
+              <input type="text" value={doctorForm.licenseNumber} onChange={handleDoctorFormChange('licenseNumber')} placeholder="Medical council ID" />
+            </label>
+            <label className="portal-span-2">
+              Phone
+              <input type="text" value={doctorForm.phone} onChange={handleDoctorFormChange('phone')} placeholder="+91..." />
+            </label>
+            <div className="portal-actions portal-span-2">
+              <Button type="submit" disabled={doctorSubmitting}>
+                {doctorSubmitting ? 'Creating...' : 'Create Doctor Account'}
+              </Button>
+              <Button type="button" variant="secondary" onClick={() => setDoctorForm(emptyDoctorForm)}>
+                Clear
+              </Button>
+            </div>
+          </form>
+        </div>
+
+        <div className="card">
+          <div className="card-title">🏷️ Department Mapping</div>
+          <div className="card-sub">Doctors registered here will appear in the patient appointment dropdown by department.</div>
+          {registeredDoctors.length ? (
+            registeredDoctors.slice(0, 6).map((doctor) => (
+              <ItemRow
+                key={doctor.id}
+                title={`${doctor.department} · ${doctor.name}`}
+                subtitle={`${doctor.specialization}${doctor.licenseNumber ? ` · ${doctor.licenseNumber}` : ''}`}
+                right={<Badge tone="info">{doctor.department}</Badge>}
+              />
+            ))
+          ) : (
+            <Alert tone="info">No doctor accounts registered yet.</Alert>
+          )}
         </div>
       </div>
       ) : null}

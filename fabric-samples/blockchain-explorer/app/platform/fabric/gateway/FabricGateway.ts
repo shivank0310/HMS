@@ -478,9 +478,12 @@ export class FabricGateway {
 	}
 
 	async getActiveOrderersList(channel_name) {
-		const network = await this.gateway.getNetwork(channel_name);
 		const orderers = [];
+		if (!channel_name) {
+			return orderers;
+		}
 		try {
+			const network = await this.gateway.getNetwork(channel_name);
 			for (const [orderer, ordererMetadata] of network.discoveryService.channel
 				.committers) {
 				const ordererAtrributes = {

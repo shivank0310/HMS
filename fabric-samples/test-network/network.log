@@ -1,0 +1,57 @@
+[0;34mUsing docker and docker-compose[0m
+[0;34mStarting nodes with CLI timeout of '5' tries and CLI delay of '3' seconds and using database 'couchdb' [0m
+[0;34mLOCAL_VERSION=v2.5.15[0m
+[0;34mDOCKER_IMAGE_VERSION=v2.5.15[0m
+[0;34mCA_LOCAL_VERSION=v1.5.17[0m
+[0;34mCA_DOCKER_IMAGE_VERSION=v1.5.17[0m
+time="2026-07-08T12:11:21+05:30" level=warning msg="Found orphan containers ([ca_hospitaladmin ca_patientaccess ca_clinicalstaff ca_diagnosticstaff ca_insurance ca_pharmacy ca_orderer]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container couchdb3  Running
+ Container orderer.example.com  Running
+ Container couchdb0  Running
+ Container couchdb1  Running
+ Container couchdb4  Running
+ Container couchdb5  Running
+ Container couchdb2  Running
+ Container peer0.pharmacy.example.com  Running
+ Container peer0.hospitaladmin.example.com  Created
+ Container peer0.insurance.example.com  Running
+ Container peer0.patientaccess.example.com  Running
+ Container peer0.clinicalstaff.example.com  Running
+ Container peer0.diagnosticstaff.example.com  Running
+ Container couchdb4  Waiting
+ Container couchdb0  Waiting
+ Container couchdb1  Waiting
+ Container couchdb3  Waiting
+ Container couchdb5  Waiting
+ Container couchdb2  Waiting
+ Container couchdb1  Healthy
+ Container couchdb5  Healthy
+ Container couchdb0  Healthy
+ Container peer0.hospitaladmin.example.com  Starting
+ Container couchdb2  Healthy
+ Container couchdb4  Healthy
+ Container couchdb3  Healthy
+ Container peer0.hospitaladmin.example.com  Started
+CONTAINER ID   IMAGE                                         COMMAND                  CREATED          STATUS                       PORTS                                                                                                                             NAMES
+47899174051b   hyperledger/fabric-peer:2.5.15                "peer node start"        20 minutes ago   Up 20 minutes                0.0.0.0:9448->9448/tcp, :::9448->9448/tcp, 7051/tcp, 0.0.0.0:11051->11051/tcp, :::11051->11051/tcp                                peer0.insurance.example.com
+d026b2aec0f3   hyperledger/fabric-peer:2.5.15                "peer node start"        20 minutes ago   Up 20 minutes                0.0.0.0:9051->9051/tcp, :::9051->9051/tcp, 7051/tcp, 0.0.0.0:9446->9446/tcp, :::9446->9446/tcp                                    peer0.diagnosticstaff.example.com
+edfe754abdcd   hyperledger/fabric-peer:2.5.15                "peer node start"        20 minutes ago   Up Less than a second        0.0.0.0:7051->7051/tcp, :::7051->7051/tcp, 0.0.0.0:9444->9444/tcp, :::9444->9444/tcp                                              peer0.hospitaladmin.example.com
+1c73ff4b8932   hyperledger/fabric-peer:2.5.15                "peer node start"        20 minutes ago   Up 20 minutes                0.0.0.0:8051->8051/tcp, :::8051->8051/tcp, 7051/tcp, 0.0.0.0:9445->9445/tcp, :::9445->9445/tcp                                    peer0.clinicalstaff.example.com
+3d1dd41d58d9   hyperledger/fabric-peer:2.5.15                "peer node start"        20 minutes ago   Up 20 minutes                0.0.0.0:9447->9447/tcp, :::9447->9447/tcp, 7051/tcp, 0.0.0.0:10051->10051/tcp, :::10051->10051/tcp                                peer0.pharmacy.example.com
+2d37347c0c3e   hyperledger/fabric-peer:2.5.15                "peer node start"        20 minutes ago   Up 20 minutes                0.0.0.0:9449->9449/tcp, :::9449->9449/tcp, 7051/tcp, 0.0.0.0:12051->12051/tcp, :::12051->12051/tcp                                peer0.patientaccess.example.com
+c8d6bf92d9ad   hyperledger/fabric-orderer:2.5.15             "orderer"                20 minutes ago   Up 20 minutes                0.0.0.0:7050->7050/tcp, :::7050->7050/tcp, 0.0.0.0:7053->7053/tcp, :::7053->7053/tcp, 0.0.0.0:9443->9443/tcp, :::9443->9443/tcp   orderer.example.com
+d29119eb703d   couchdb:3.4.2                                 "tini -- /docker-ent…"   20 minutes ago   Up 20 minutes (healthy)      4369/tcp, 9100/tcp, 0.0.0.0:10984->5984/tcp, :::10984->5984/tcp                                                                   couchdb5
+cd806ce3e069   couchdb:3.4.2                                 "tini -- /docker-ent…"   20 minutes ago   Up 20 minutes (healthy)      4369/tcp, 9100/tcp, 0.0.0.0:7984->5984/tcp, :::7984->5984/tcp                                                                     couchdb2
+543e951b434d   couchdb:3.4.2                                 "tini -- /docker-ent…"   20 minutes ago   Up 20 minutes (healthy)      4369/tcp, 9100/tcp, 0.0.0.0:9984->5984/tcp, :::9984->5984/tcp                                                                     couchdb4
+30dca658cd01   couchdb:3.4.2                                 "tini -- /docker-ent…"   20 minutes ago   Up 20 minutes (healthy)      4369/tcp, 9100/tcp, 0.0.0.0:6984->5984/tcp, :::6984->5984/tcp                                                                     couchdb1
+5e0d66cb1a3f   couchdb:3.4.2                                 "tini -- /docker-ent…"   20 minutes ago   Up 20 minutes (healthy)      4369/tcp, 9100/tcp, 0.0.0.0:5984->5984/tcp, :::5984->5984/tcp                                                                     couchdb0
+9f67e42bfecc   couchdb:3.4.2                                 "tini -- /docker-ent…"   20 minutes ago   Up 20 minutes (healthy)      4369/tcp, 9100/tcp, 0.0.0.0:8984->5984/tcp, :::8984->5984/tcp                                                                     couchdb3
+a849fc5f7167   hyperledger/fabric-ca:1.5.17                  "sh -c 'fabric-ca-se…"   20 minutes ago   Up 20 minutes                0.0.0.0:7054->7054/tcp, :::7054->7054/tcp, 0.0.0.0:17054->17054/tcp, :::17054->17054/tcp                                          ca_hospitaladmin
+e19734c21c8e   hyperledger/fabric-ca:1.5.17                  "sh -c 'fabric-ca-se…"   20 minutes ago   Up 20 minutes                0.0.0.0:12054->12054/tcp, :::12054->12054/tcp, 7054/tcp, 0.0.0.0:22054->22054/tcp, :::22054->22054/tcp                            ca_patientaccess
+5ba9638c25ee   hyperledger/fabric-ca:1.5.17                  "sh -c 'fabric-ca-se…"   20 minutes ago   Up 20 minutes                0.0.0.0:8054->8054/tcp, :::8054->8054/tcp, 7054/tcp, 0.0.0.0:18054->18054/tcp, :::18054->18054/tcp                                ca_clinicalstaff
+03dae87ebb17   hyperledger/fabric-ca:1.5.17                  "sh -c 'fabric-ca-se…"   20 minutes ago   Up 20 minutes                0.0.0.0:9054->9054/tcp, :::9054->9054/tcp, 7054/tcp, 0.0.0.0:19054->19054/tcp, :::19054->19054/tcp                                ca_diagnosticstaff
+d8af25bdd15d   hyperledger/fabric-ca:1.5.17                  "sh -c 'fabric-ca-se…"   20 minutes ago   Up 20 minutes                0.0.0.0:11054->11054/tcp, :::11054->11054/tcp, 7054/tcp, 0.0.0.0:21054->21054/tcp, :::21054->21054/tcp                            ca_insurance
+639f19e9d3be   hyperledger/fabric-ca:1.5.17                  "sh -c 'fabric-ca-se…"   20 minutes ago   Up 20 minutes                0.0.0.0:10054->10054/tcp, :::10054->10054/tcp, 7054/tcp, 0.0.0.0:20054->20054/tcp, :::20054->20054/tcp                            ca_pharmacy
+426e098ed66a   hyperledger/fabric-ca:1.5.17                  "sh -c 'fabric-ca-se…"   20 minutes ago   Up 20 minutes                0.0.0.0:13054->13054/tcp, :::13054->13054/tcp, 7054/tcp, 0.0.0.0:23054->23054/tcp, :::23054->23054/tcp                            ca_orderer
+d7c524c4d609   ghcr.io/hyperledger-labs/explorer:latest      "docker-entrypoint.s…"   12 days ago      Up About an hour             0.0.0.0:8080->8080/tcp, :::8080->8080/tcp                                                                                         explorer.mynetwork.com
+91c7c8eb3f62   ghcr.io/hyperledger-labs/explorer-db:latest   "docker-entrypoint.s…"   12 days ago      Up About an hour (healthy)   5432/tcp                                                                                                                          explorerdb.mynetwork.com

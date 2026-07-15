@@ -11,6 +11,8 @@ const { doctorRepo } = require('../repositories/misc.repository');
 const fabricService = require('../blockchain/fabricService');
 const { CHANNELS } = require('../config/fabric');
 const { ROLES } = require('../utils/roles');
+const userRepo = require('../repositories/user.repository');
+const patientService = require('./patient.service');
 
 const MAX_RECENT_ITEMS = 6;
 
@@ -114,6 +116,7 @@ function buildAdminDashboard(data) {
     },
     records: {
       patients: takeRecent(data.patients),
+      doctors: takeRecent(data.doctors),
       appointments: takeRecent(data.appointments),
       treatments: takeRecent(data.treatments),
       bills: takeRecent(data.bills),
@@ -136,6 +139,7 @@ function buildClinicalDashboard(data) {
   return {
     metrics: {
       patients: data.patients.length,
+      doctors: data.doctors.length,
       appointments: data.appointments.length,
       activeTreatments: countByStatus(data.treatments, 'active'),
       diagnoses: data.diagnoses.length,
@@ -144,6 +148,7 @@ function buildClinicalDashboard(data) {
     },
     records: {
       patients: takeRecent(data.patients),
+      doctors: takeRecent(data.doctors),
       appointments: takeRecent(data.appointments),
       treatments: takeRecent(data.treatments),
       diagnoses: takeRecent(data.diagnoses),
@@ -160,7 +165,22 @@ function buildClinicalDashboard(data) {
 }
 
 async function buildPatientDashboard(data, userId) {
-  const patient = await patientRepo.findOne({ userId });
+  let patient = await patientRepo.findOne({ userId });
+  if (!patient) {
+    const user = await userRepo.findById(userId);
+    if (user && user.role === ROLES.PATIENT) {
+      patient = await patientService.createPatient(
+        {
+          userId: user.id,
+          fullName: user.fullName || user.email || 'Patient',
+          contactEmail: user.email,
+          contactPhone: user.phone || null,
+          status: 'active',
+        },
+        user.mspId
+      );
+    }
+  }
   const patientId = patient?.id;
   const filterByPatient = (items) => (patientId ? items.filter((item) => item.patientId === patientId) : items);
 
@@ -175,6 +195,7 @@ async function buildPatientDashboard(data, userId) {
   return {
     metrics: {
       patientName: patient?.fullName || patients[0]?.fullName || 'Patient',
+      doctors: data.doctors.length,
       appointments: appointments.length,
       activeTreatments: countByStatus(treatments, 'active'),
       diagnoses: diagnoses.length,
@@ -184,6 +205,7 @@ async function buildPatientDashboard(data, userId) {
     },
     records: {
       patients,
+      doctors: takeRecent(data.doctors),
       appointments: takeRecent(appointments),
       treatments: takeRecent(treatments),
       diagnoses: takeRecent(diagnoses),

@@ -4,9 +4,14 @@
 function installChaincode() {
   ORG=$1
   setGlobals $ORG
+  local query_rc=0
+  local res=0
   set -x
+  set +e
   peer lifecycle chaincode queryinstalled --output json | jq -r 'try (.installed_chaincodes[].package_id)' | grep ^${PACKAGE_ID}$ >&log.txt
-  if test $? -ne 0; then
+  query_rc=$?
+  set -e
+  if test ${query_rc} -ne 0; then
     peer lifecycle chaincode install ${CC_NAME}.tar.gz >&log.txt
     res=$?
   fi
@@ -59,9 +64,9 @@ function checkCommitReadiness() {
     peer lifecycle chaincode checkcommitreadiness --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${CC_VERSION} --sequence ${CC_SEQUENCE} ${INIT_REQUIRED} ${CC_END_POLICY} ${CC_COLL_CONFIG} --output json >&log.txt
     res=$?
     { set +x; } 2>/dev/null
-    let rc=0
+    rc=0
     for var in "$@"; do
-      grep "$var" log.txt &>/dev/null || let rc=1
+      grep "$var" log.txt &>/dev/null || rc=1
     done
     COUNTER=$(expr $COUNTER + 1)
   done
@@ -109,7 +114,7 @@ function queryCommitted() {
     res=$?
     { set +x; } 2>/dev/null
     test $res -eq 0 && VALUE=$(cat log.txt | grep -o '^Version: '$CC_VERSION', Sequence: [0-9]*, Endorsement Plugin: escc, Validation Plugin: vscc')
-    test "$VALUE" = "$EXPECTED_RESULT" && let rc=0
+    test "$VALUE" = "$EXPECTED_RESULT" && rc=0
     COUNTER=$(expr $COUNTER + 1)
   done
   cat log.txt
@@ -140,7 +145,7 @@ function chaincodeInvokeInit() {
     peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile "$ORDERER_CA" -C $CHANNEL_NAME -n ${CC_NAME} "${PEER_CONN_PARMS[@]}" --isInit -c ${fcn_call} >&log.txt
     res=$?
     { set +x; } 2>/dev/null
-    let rc=$res
+    rc=$res
     COUNTER=$(expr $COUNTER + 1)
   done
   cat log.txt
@@ -163,7 +168,7 @@ function chaincodeQuery() {
     peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["org.hyperledger.fabric:GetMetadata"]}' >&log.txt
     res=$?
     { set +x; } 2>/dev/null
-    let rc=$res
+    rc=$res
     COUNTER=$(expr $COUNTER + 1)
   done
   cat log.txt
@@ -187,15 +192,17 @@ function resolveSequence() {
   # we either get a successful response, or reach MAX RETRY
   while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ]; do
     set -x
+    set +e
     COMMITTED_CC_SEQUENCE=$(peer lifecycle chaincode querycommitted --channelID $CHANNEL_NAME --name ${CC_NAME} | sed -n "/Version:/{s/.*Sequence: //; s/, Endorsement Plugin:.*$//; p;}")
     res=$?
+    set -e
     { set +x; } 2>/dev/null
-    let rc=$res
+    rc=$res
     COUNTER=$(expr $COUNTER + 1)
   done
 
   # if there are no committed versions, then set the sequence to 1
-  if [ -z $COMMITTED_CC_SEQUENCE ]; then
+  if [ -z "${COMMITTED_CC_SEQUENCE}" ]; then
     CC_SEQUENCE=1
     return 0
   fi
@@ -206,10 +213,12 @@ function resolveSequence() {
   # we either get a successful response, or reach MAX RETRY
   while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ]; do
     set -x
+    set +e
     APPROVED_CC_SEQUENCE=$(peer lifecycle chaincode queryapproved --channelID $CHANNEL_NAME --name ${CC_NAME} | sed -n "/sequence:/{s/^sequence: //; s/, version:.*$//; p;}")
     res=$?
+    set -e
     { set +x; } 2>/dev/null
-    let rc=$res
+    rc=$res
     COUNTER=$(expr $COUNTER + 1)
   done
 
@@ -236,7 +245,7 @@ queryInstalledOnPeer() {
     #infoln "Attempting to list on peer0.org${ORG}, Retry after $DELAY seconds."
     peer lifecycle chaincode queryinstalled >&log.txt
     res=$?
-    let rc=$res
+    rc=$res
     COUNTER=$(expr $COUNTER + 1)
   done
   cat log.txt
@@ -253,7 +262,7 @@ queryCommittedOnChannel() {
     #infoln "Attempting to list on peer0.org${ORG}, Retry after $DELAY seconds."
     peer lifecycle chaincode querycommitted -C $CHANNEL >&log.txt
     res=$?
-    let rc=$res
+    rc=$res
     COUNTER=$(expr $COUNTER + 1)
   done
   cat log.txt
@@ -273,7 +282,7 @@ listAllCommitted() {
   while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ]; do
     CHANNEL_LIST=$(peer channel list | sed '1,1d')
     res=$?
-    let rc=$res
+    rc=$res
     COUNTER=$(expr $COUNTER + 1)
   done
   if test $rc -eq 0; then
@@ -305,7 +314,7 @@ chaincodeInvoke() {
     peer chaincode invoke -o localhost:7050 -C $CHANNEL_NAME -n ${CC_NAME} -c ${CC_INVOKE_CONSTRUCTOR} --tls --cafile $ORDERER_CA  --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA  >&log.txt
     res=$?
     { set +x; } 2>/dev/null
-    let rc=$res
+    rc=$res
     COUNTER=$(expr $COUNTER + 1)
   done
   cat log.txt
@@ -334,7 +343,7 @@ chaincodeQuery() {
     peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c ${CC_QUERY_CONSTRUCTOR} >&log.txt
     res=$?
     { set +x; } 2>/dev/null
-    let rc=$res
+    rc=$res
     COUNTER=$(expr $COUNTER + 1)
   done
   cat log.txt

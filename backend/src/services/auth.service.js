@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const jwtConfig = require('../config/jwt');
 const userRepo = require('../repositories/user.repository');
 const { refreshTokenRepo } = require('../repositories/misc.repository');
+const { doctorRepo } = require('../repositories/misc.repository');
 const { generateId } = require('../utils/id');
 const { ROLE_TO_MSP, ROLES } = require('../utils/roles');
 const ApiError = require('../utils/ApiError');
@@ -42,6 +43,17 @@ async function registerUser(payload) {
     fullName: payload.fullName || payload.full_name,
     phone: payload.phone || null,
   });
+
+  if (role === ROLES.DOCTOR) {
+    await doctorRepo.insert({
+      id: generateId('doc'),
+      userId: user.id,
+      specialization: payload.specialization || null,
+      licenseNumber: payload.licenseNumber || null,
+      department: payload.department || null,
+      metadata: payload.metadata || {},
+    });
+  }
 
   return sanitizeUser(user);
 }

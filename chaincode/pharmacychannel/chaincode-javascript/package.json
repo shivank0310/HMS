@@ -1,7 +1,7 @@
 {
   "name": "medichain-pharmacy-chaincode",
   "version": "1.0.0",
-  "description": "MediChain pharmacy channel chaincode with dynamic fields",
+  "description": "MediChain pharmacy channel chaincode",
   "main": "index.js",
   "engines": {
     "node": ">=18"
